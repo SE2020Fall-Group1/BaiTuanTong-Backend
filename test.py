@@ -1,6 +1,11 @@
+from flask_script import Manager
 from exts import db
-from app.models import User, Preference
+from app.models import User, Preference, Club, Post
+from manage import app
 import requests
+
+
+manager = Manager(app)
 
 
 class HttpRequest(object):
@@ -32,6 +37,7 @@ class HttpSession(object):
         self.session.close()
 
 
+@manager.command
 def test_register():
     loginURL = 'http://127.0.0.1:5000/user/login'
     registerURL = 'http://127.0.0.1:5000/user/register'
@@ -47,27 +53,63 @@ def test_register():
     print(http3.text)
 
 
+@manager.command
 def test_database():
-
-    #db.create_all()
+    db.drop_all()
+    db.create_all()
     def add_items():
-        u1 = User(username='jhc', password='hehe', email='123@pku.com')
-        u2 = User(username='gf', password='gaga', email='456@pku.com')
+        u1 = User(username='jhc', password='hehe', email='jdtql@pku.com')
+        u2 = User(username='gf', password='gaga', email='tqljd@pku.com')
+
         p1 = Preference(preference_name='kfc')
         p2 = Preference(preference_name='cpp')
         p3 = Preference(preference_name='java')
+
+        c1 = Club(club_name='yuanhuo', president_id=1)
+        c2 = Club(club_name='feiying', president_id=2)
+
+        po1 = Post(title='one', text='jd is too strong', club_id=1)
+        po2 = Post(title='two', text="let's compliment jd", club_id=2)
+
         u1.preferences.append(p1)
         u1.preferences.append(p2)
         u2.preferences.append(p1)
         u2.preferences.append(p3)
-        db.session.add_all([u1, u2, p1, p2, p3])
+        u1.followed_clubs.append(c1)
+        u2.managed_clubs.append(c1)
+
+        db.session.add_all([u1, u2, p1, p2, p3, po1, po2, c1, c2])
         db.session.commit()
 
-    #add_items()
-    u = User.query.filter_by(username='gf').first()
-    for p in u.preferences:
-        print(p.preference_name)
+    add_items()
+    for name in ['jhc', 'gf']:
+        print(name)
+        u = User.query.filter_by(username=name).first()
+        for p in u.preferences:
+            print(p.preference_name, end=' ')
+        print()
+        print('followed club: ', end='')
+        for c in u.followed_clubs:
+            print(c.club_name, end=' ')
+        print()
+        print('managed club: ', end='')
+        for c in u.managed_clubs:
+            print(c.club_name, end=' ')
+        print()
+        print(u.owned_club.club_name if u.owned_club else None)
+        print()
+        print('managed club: ', end='')
+        for c in u.managed_clubs:
+            print(c.club_name, end=' ')
+        print()
+
+    for name in ['yuanhuo', 'feiying']:
+        print(name)
+        c = Club.query.filter_by(club_name=name).first()
+        for p in c.posts:
+            print(p.title)
+            print(p.text)
 
 
 if __name__ == '__main__':
-    test_database()
+    manager.run()
