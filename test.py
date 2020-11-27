@@ -1,3 +1,5 @@
+from exts import db
+from app.models import User, Preference
 import requests
 
 
@@ -30,16 +32,42 @@ class HttpSession(object):
         self.session.close()
 
 
-if __name__ == '__main__':
+def test_register():
     loginURL = 'http://127.0.0.1:5000/user/login'
     registerURL = 'http://127.0.0.1:5000/user/register'
     http = HttpSession()
     http1 = http.request(method='post', url=registerURL,
-                            data={'username': "jhc", 'password': 'hehe'})
+                         data={'username': "jhc", 'password': 'hehe'})
     http2 = http.request(method='post', url=registerURL,
-                            data={'username': "gf", 'password': "hehe"})
+                         data={'username': "gf", 'password': "hehe"})
     http3 = http.request(method='post', url=registerURL,
-                            data={'username': "jd", 'password': "hehe", 'email': "789"})
+                         data={'username': "jd", 'password': "hehe", 'email': "789"})
     print(http1.text)
     print(http2.text)
     print(http3.text)
+
+
+def test_database():
+
+    #db.create_all()
+    def add_items():
+        u1 = User(username='jhc', password='hehe', email='123@pku.com')
+        u2 = User(username='gf', password='gaga', email='456@pku.com')
+        p1 = Preference(preference_name='kfc')
+        p2 = Preference(preference_name='cpp')
+        p3 = Preference(preference_name='java')
+        u1.preferences.append(p1)
+        u1.preferences.append(p2)
+        u2.preferences.append(p1)
+        u2.preferences.append(p3)
+        db.session.add_all([u1, u2, p1, p2, p3])
+        db.session.commit()
+
+    #add_items()
+    u = User.query.filter_by(username='gf').first()
+    for p in u.preferences:
+        print(p.preference_name)
+
+
+if __name__ == '__main__':
+    test_database()
