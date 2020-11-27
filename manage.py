@@ -9,11 +9,9 @@ app.register_blueprint(register_login.register_login)
 
 db.init_app(app)
 
-
 @app.route('/')
 def hello():
     return '<h1>Hello World!</h1>'
-
 
 if __name__ == '__main__':
     app.run(debug=False)
