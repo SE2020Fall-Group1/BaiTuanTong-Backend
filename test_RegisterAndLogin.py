@@ -25,8 +25,8 @@ with app.app_context():     # 需要用这句来加载app的上下文环境
     db.create_all()
 
     def add_items():
-        u1 = User(username='jhc', password='hehe', email='jdtql@pku.com')
-        u2 = User(username='gf', password='gaga', email='tqljd@pku.com')
+        u1 = User(username='jhc', password='hehe', email='jhc@pku.edu.cn')
+        u2 = User(username='gf', password='gaga', email='gf@stu.pku.edu.cn')
 
         p1 = Preference(preference_name='kfc')
 
@@ -67,38 +67,48 @@ def register(client, username, password, email):
 
 # 类名必须以Test_开头，函数名必须以test_开头
 # 目前的测试只是打印出了几个情况的返回值（需要-s选项）
+class Test_register:
+    def test_register1(self, client):
+        rv = register(client, 'lzh', r'heihei', r'lzh@pku.edu.cn')
+        print(rv.data)
+        assert b'user established' == rv.data
+
+    def test_register2(self, client):
+        rv = register(client, 'tbw', r'jojo', r'lzh@pku.edu.cn')
+        print(rv.data)
+        assert b'email existed' == rv.data
+
+    def test_register3(self, client):
+        rv = register(client, 'lzh', r'jojo', r'lzh2@pku.edu.cn')
+        print(rv.data)
+        assert b'username existed' == rv.data
+
+    def test_register4(self, client):
+        rv = register(client, 'lzh', r'heihei', r'lzh@pku.edu.cn')
+        print(rv.data)
+        assert b'username existed' == rv.data
+
+    def test_register5(self, client):
+        rv = register(client, 'tbw', r'jojo', r'tbw@pku.edu.cn')
+        print(rv.data)
+        assert b'user established' == rv.data
+
+
 class Test_login:
     def test_login1(self, client):
-        rv = login(client, 'gf', 'hahaha')
+        rv = login(client, 'lp', 'hahaha')
         print(rv.data)
-        # assert b'invalid' == rv.data
+        assert b'wrong username' == rv.data
 
     def test_login2(self, client):
         rv = login(client, 'lzh', 'heihei')
         print(rv.data)
-        # assert b'valid' == rv.data
+        assert b'valid' == rv.data
 
     def test_login3(self, client):
-        rv = login(client, 'gf', 'gaga')
+        rv = login(client, 'lzh', 'gaga')
         print(rv.data)
-        # assert b'valid' == rv.data
-
-
-class Test_register:
-    def test_register1(self, client):
-        rv = register(client, 'lzh', 'heihei', '789')
-        print(rv.data)
-        # assert b'username has been taken' == rv.data
-
-    def test_register2(self, client):
-        rv = register(client, 'jd', 'jojo', '789')
-        print(rv.data)
-        # assert b'username has been taken' == rv.data
-
-    def test_register3(self, client):
-        rv = register(client, 'lzh', 'jojo', '123')
-        print(rv.data)
-        # assert b'username has been taken' == rv.data
+        assert b'wrong password' == rv.data
 
 
 if __name__ == '__main__':
