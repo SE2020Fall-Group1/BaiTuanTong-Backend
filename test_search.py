@@ -35,14 +35,14 @@ with app.app_context():     # 需要用这句来加载app的上下文环境
         c3 = Club(club_name='yuanpei', president_id=2)
 
         po1 = Post(title='one', text='jd is too strong', club_id=1)
-        po1 = Post(title='onekfc', text='jd is too too strong', club_id=1)
-        po2 = Post(title='two', text="let's compliment jd", club_id=2)
+        po2 = Post(title='onekfc', text='jd is too too strong', club_id=1)
+        po3 = Post(title='two', text="let's compliment jd", club_id=2)
 
         u1.preferences.append(p1)
         u1.followed_clubs.append(c1)
         u2.managed_clubs.append(c1)
 
-        db.session.add_all([u1, u2, p1, po1, po2, c1, c2, c3])
+        db.session.add_all([u1, u2, p1, po1, po2, po3, c1, c2, c3])
         db.session.commit()
 
     add_items()
@@ -57,6 +57,14 @@ def search_club(client, keyword):
     )
     # 当请求返回后会跳转页面时，要用follow_redirects=True告诉客户端追踪重定向
 
+def search_post(client, keyword):
+    url = '/post/search'
+    return client.post(
+        url,
+        data=dict(keyword=keyword),
+        follow_redirects=True
+    )
+
 
 # 类名必须以Test_开头，函数名必须以test_开头
 # 目前的测试只是打印出了几个情况的返回值（需要-s选项）
@@ -69,27 +77,15 @@ class Test_search_club:
         rv = search_club(client, 'yuan')
         print(rv.data)
 
-    """
-    def test_register2(self, client):
-        rv = register(client, 'tbw', r'jojo', r'lzh@pku.edu.cn')
-        print(rv.data)
-        assert b'email existed' == rv.data
 
-    def test_register3(self, client):
-        rv = register(client, 'lzh', r'jojo', r'lzh2@pku.edu.cn')
+class Test_search_post:
+    def test_search_post1(self, client):
+        rv = search_post(client, 'onekfc')
         print(rv.data)
-        assert b'username existed' == rv.data
-
-    def test_register4(self, client):
-        rv = register(client, 'lzh', r'heihei', r'lzh@pku.edu.cn')
+    
+    def test_search_post2(self, client):
+        rv = search_post(client, 'one')
         print(rv.data)
-        assert b'username existed' == rv.data
-
-    def test_register5(self, client):
-        rv = register(client, 'tbw', r'jojo', r'tbw@pku.edu.cn')
-        print(rv.data)
-        assert b'user established' == rv.data
-    """
 
 
 if __name__ == '__main__':
