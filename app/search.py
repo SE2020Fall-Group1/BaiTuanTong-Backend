@@ -5,22 +5,22 @@ from .models import User, Club, Post
 search = Blueprint('search', __name__)
 
 
-def clubs_to_json(clubs):
+def extract_club_info(clubs):
     ret_info = []
     for club in clubs:
-        ret_info.append([club.club_name,
+        ret_info.append([club.id,
+                         club.club_name,
                          club.introduction,
-                         User.query.filter_by(id=club.president_id).first()])
-    return json.dumps(ret_info)
+                         User.query.filter_by(id=club.president_id).first().username])
+    return ret_info
 
 
 @search.route('/club/search', methods=['POST'])
 def search_club():
-    return 'valid'
-    #keyword = request.form.get('keyword')
-    #clubs = Club.query.filter(keyword in Club.club_name).all()
-    #return 'valid'
-    #return clubs_to_json(clubs)
+    keyword = request.form.get('keyword')
+    clubs = Club.query.filter(Club.club_name.contains(keyword)).all()
+    print(extract_club_info(clubs))
+    return json.dumps(extract_club_info(clubs))
 
 
 @search.route('/post/search', methods=['POST'])
