@@ -1,17 +1,21 @@
 from flask import Flask
 import config
-from app import register_login
+from app import register_login, club_homepage
 from exts import db
 
 app = Flask(__name__)  # 通过装饰器设置路由方法
 app.config.from_object(config)
+
 app.register_blueprint(register_login.register_login)
+app.register_blueprint(club_homepage.club_homepage)
 
 db.init_app(app)
+
 
 @app.route('/')
 def hello():
     return '<h1>Hello World!</h1>'
+
 
 if __name__ == '__main__':
     app.run(debug=False)
