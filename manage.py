@@ -1,11 +1,12 @@
 from flask import Flask
 import config
-from app import register_login
+from app import register_login, view_post
 from exts import db
 
 app = Flask(__name__)  # 通过装饰器设置路由方法
 app.config.from_object(config)
 app.register_blueprint(register_login.register_login)
+app.register_blueprint(view_post.view_post)
 
 db.init_app(app)
 
