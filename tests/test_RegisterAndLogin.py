@@ -1,8 +1,7 @@
-from exts import db
-from app.models import User, Preference, Club, Post
-from manage import app
-
 import pytest
+from exts import db
+from manage import app
+from tests.utils import add_items
 
 
 @pytest.fixture
@@ -17,33 +16,6 @@ def client(request):
     request.addfinalizer(teardown)  # 执行回收函数
 
     return client
-
-
-with app.app_context():     # 需要用这句来加载app的上下文环境
-    # 按以下配置重置数据库
-    db.drop_all()
-    db.create_all()
-
-    def add_items():
-        u1 = User(username='jhc', password='hehe', email='jhc@pku.edu.cn')
-        u2 = User(username='gf', password='gaga', email='gf@stu.pku.edu.cn')
-
-        p1 = Preference(preference_name='kfc')
-
-        c1 = Club(club_name='yuanhuo', president_id=1)
-        c2 = Club(club_name='feiying', president_id=2)
-
-        po1 = Post(title='one', text='jd is too strong', club_id=1)
-        po2 = Post(title='two', text="let's compliment jd", club_id=2)
-
-        u1.preferences.append(p1)
-        u1.followed_clubs.append(c1)
-        u2.managed_clubs.append(c1)
-
-        db.session.add_all([u1, u2, p1, po1, po2, c1, c2])
-        db.session.commit()
-
-    add_items()
 
 
 def login(client, username, password):
@@ -68,6 +40,12 @@ def register(client, username, password, email):
 # 类名必须以Test_开头，函数名必须以test_开头
 # 目前的测试只是打印出了几个情况的返回值（需要-s选项）
 class Test_register:
+    def test_init(self):
+        with app.app_context():
+            db.drop_all()
+            db.create_all()
+            add_items()
+
     def test_register1(self, client):
         rv = register(client, 'lzh', r'heihei', r'lzh@pku.edu.cn')
         print(rv.data)
