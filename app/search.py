@@ -41,9 +41,5 @@ def search_post():
 
 @search.route('/post/push', methods=['POST'])
 def push_post():
-    username = request.form.get('username')
-    user = User.query.filter_by(username=username).first()
-    posts = []
-    for keyword in user.preferences:
-        posts.extend(Post.query.filter(keyword in Post.title).all())
-    return json.dumps(posts)
+    posts = Post.query.filter(Post.likes>=0).all()
+    return json.dumps(extract_post_info(posts))
