@@ -1,7 +1,7 @@
 from flask import Flask
 import config
 from app import register_login, view_post
-from exts import db
+from exts import db, cache, mail
 
 app = Flask(__name__)  # 通过装饰器设置路由方法
 app.config.from_object(config)
@@ -9,6 +9,8 @@ app.register_blueprint(register_login.register_login)
 app.register_blueprint(view_post.view_post)
 
 db.init_app(app)
+cache.init_app(app)
+mail.init_app(app)
 
 @app.route('/')
 def hello():

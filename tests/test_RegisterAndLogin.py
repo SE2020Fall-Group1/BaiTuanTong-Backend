@@ -1,5 +1,5 @@
 import pytest
-from exts import db
+from exts import db, cache
 from manage import app
 from tests.utils import add_items
 
@@ -28,11 +28,19 @@ def login(client, username, password):
     # 当请求返回后会跳转页面时，要用follow_redirects=True告诉客户端追踪重定向
 
 
-def register(client, username, password, email):
+def register(client, username, password, email, captcha):
     url = '/user/register'
     return client.post(
         url,
-        data=dict(username=username, password=password, email=email),
+        data=dict(username=username, password=password, email=email, captcha=captcha),
+        follow_redirects=True
+    )
+
+
+def send_captcha(client, email):
+    url = '/user/captcha?email=%s' % email
+    return client.get(
+        url,
         follow_redirects=True
     )
 
@@ -47,46 +55,60 @@ class Test_register:
             add_items()
 
     def test_register1(self, client):
-        rv = register(client, 'lzh', r'heihei', r'lzh@pku.edu.cn')
-        print(rv.data)
-        assert b'user established' == rv.data
+        rv = register(client, 'lzh', r'heihei', r'lzh@pku.edu.cn', '123')
+        assert rv.data == b'invalid captcha'
 
     def test_register2(self, client):
-        rv = register(client, 'tbw', r'jojo', r'lzh@pku.edu.cn')
-        print(rv.data)
-        assert b'email existed' == rv.data
+        cache.set('lzh@pku.edu.cn', '123')
+        print(cache.get('lzh@pku.edu.cn'))
+        rv = register(client, 'lzh', r'heihei', r'lzh@pku.edu.cn', '123')
+        assert rv.data == b'user established'
 
     def test_register3(self, client):
-        rv = register(client, 'lzh', r'jojo', r'lzh2@pku.edu.cn')
-        print(rv.data)
-        assert b'username existed' == rv.data
+        rv = register(client, 'tbw', r'jojo', r'lzh@pku.edu.cn', '123')
+        assert rv.data == b'email existed'
 
     def test_register4(self, client):
-        rv = register(client, 'lzh', r'heihei', r'lzh@pku.edu.cn')
-        print(rv.data)
-        assert b'username existed' == rv.data
+        rv = register(client, 'lzh', r'jojo', r'lzh2@pku.edu.cn', '123')
+        assert rv.data == b'username existed'
 
     def test_register5(self, client):
-        rv = register(client, 'tbw', r'jojo', r'tbw@pku.edu.cn')
-        print(rv.data)
-        assert b'user established' == rv.data
+        rv = register(client, 'lzh', r'heihei', r'lzh@pku.edu.cn', '123')
+        assert rv.data == b'username existed'
+
+    def test_register6(self, client):
+        cache.set('tbw@pku.edu.cn', '123')
+        rv = register(client, 'tbw', r'jojo', r'tbw@pku.edu.cn', '123')
+        assert rv.data == b'user established'
 
 
 class Test_login:
     def test_login1(self, client):
         rv = login(client, 'lp', 'hahaha')
         print(rv.data)
-        assert b'wrong username' == rv.data
+        assert rv.data == b'wrong username'
 
     def test_login2(self, client):
         rv = login(client, 'lzh', 'heihei')
         print(rv.data)
-        assert b'valid' == rv.data
+        assert rv.data == b'valid'
 
     def test_login3(self, client):
         rv = login(client, 'lzh', 'gaga')
         print(rv.data)
-        assert b'wrong password' == rv.data
+        assert rv.data == b'wrong password'
+
+
+class Test_captcha:
+    def test1(self, client):
+        rv = send_captcha(client, '1652961256@qq.com')
+        print(rv)
+        assert rv.data == b'success'
+
+    def test2(self, client):
+        rv = send_captcha(client, '1652961256@qq.com')
+        print(rv)
+        assert rv.data == b'request too frequently'
 
 
 if __name__ == '__main__':
