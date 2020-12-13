@@ -2,6 +2,7 @@ import pytest
 from exts import db, cache
 from manage import app
 from tests.utils import add_items
+from app.models import User
 
 
 @pytest.fixture
@@ -26,6 +27,15 @@ def login(client, username, password):
         follow_redirects=True
     )
     # 当请求返回后会跳转页面时，要用follow_redirects=True告诉客户端追踪重定向
+
+
+def logout(client, user_id):
+    url = '/user/logout'
+    return client.post(
+        url,
+        data=dict(userId=user_id),
+        follow_redirects=True
+    )
 
 
 def register(client, username, password, email, captcha):
@@ -92,6 +102,9 @@ class Test_login:
         rv = login(client, 'lzh', 'heihei')
         print(rv.data)
         assert rv.data == b'valid'
+        rv = login(client, 'lzh', 'heihei')
+        print(rv.data)
+        assert rv.data == b'multiple login error'
 
     def test_login3(self, client):
         rv = login(client, 'lzh', 'gaga')
@@ -99,14 +112,31 @@ class Test_login:
         assert rv.data == b'wrong password'
 
 
+class Test_logout:
+    def test_logout1(self, client):
+        login(client, 'lzh', 'heihei')
+        with app.app_context():
+            user = User.query.filter_by(username='lzh').first()
+        rv = logout(client, user.id)
+        print(rv.data)
+        assert rv.data == b'success'
+
+    def test_logout2(self, client):
+        with app.app_context():
+            user = User.query.filter_by(username='lzh').first()
+        rv = logout(client, user.id)
+        print(rv.data)
+        assert rv.data == b'not login error'
+
+
 class Test_captcha:
     def test1(self, client):
-        rv = send_captcha(client, '1652961256@qq.com')
+        rv = send_captcha(client, 'baituantong@163.com')
         print(rv)
         assert rv.data == b'success'
 
     def test2(self, client):
-        rv = send_captcha(client, '1652961256@qq.com')
+        rv = send_captcha(client, 'baituantong@163.com')
         print(rv)
         assert rv.data == b'request too frequently'
 

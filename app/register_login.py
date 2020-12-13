@@ -1,8 +1,9 @@
 import smtplib
-from flask import Blueprint, request
+from flask import Blueprint, request, session
 from flask_mail import Message
 from exts import db, cache, mail
 from .models import User
+from decorators import login_required
 import numpy as np
 register_login = Blueprint('register_login', __name__, url_prefix='/user')
 
@@ -15,6 +16,9 @@ def login():
     if not user:
         return 'wrong username', 300
     if user.password == password:
+        if session.get('user_id'):
+            return 'multiple login error'
+        session['user_id'] = user.id
         return 'valid'
     else:
         return 'wrong password', 300
@@ -56,4 +60,14 @@ def email_captcha():
     except smtplib.SMTPException:
         return 'sending failed', 500
     cache.set(email, captcha)
+    return 'success', 200
+
+
+@register_login.route('/logout', methods=['POST'])
+@login_required
+def logout():
+    user_id = request.form.get('userId', type=int)
+    if session.get('user_id') != user_id:
+        return 'invalid userId'
+    session.pop('userId', None)
     return 'success', 200
