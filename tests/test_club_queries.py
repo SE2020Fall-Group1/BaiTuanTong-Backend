@@ -19,34 +19,27 @@ def client(request):
     return client
 
 
-with app.app_context():     # 需要用这句来加载app的上下文环境
-    # 按以下配置重置数据库
-    db.drop_all()
-    db.create_all()
+def add_items():
+    u1 = User(username='jhc', password='hehe', email='jhc@pku.edu.cn')
+    u2 = User(username='gf', password='gaga', email='gf@stu.pku.edu.cn')
 
-    def add_items():
-        u1 = User(username='jhc', password='hehe', email='jhc@pku.edu.cn')
-        u2 = User(username='gf', password='gaga', email='gf@stu.pku.edu.cn')
+    p1 = Preference(preference_name='kfc')
 
-        p1 = Preference(preference_name='kfc')
+    c1 = Club(club_name='yuanhuo', president_id=1)
+    c2 = Club(club_name='feiying', president_id=2)
+    c3 = Club(club_name='yuanpei', president_id=2)
 
-        c1 = Club(club_name='yuanhuo', president_id=1)
-        c2 = Club(club_name='feiying', president_id=2)
-        c3 = Club(club_name='yuanpei', president_id=2)
+    po1 = Post(title='one', text='jd is too strong', club_id=1)
+    po2 = Post(title='onekfc', text='jd is too too strong', club_id=1)
+    po3 = Post(title='two', text="let's compliment jd", club_id=2)
 
-        po1 = Post(title='one', text='jd is too strong', club_id=1)
-        po2 = Post(title='onekfc', text='jd is too too strong', club_id=1)
-        po3 = Post(title='two', text="let's compliment jd", club_id=2)
+    u1.preferences.append(p1)
+    u1.followed_clubs.append(c2)
+    u2.managed_clubs.append(c1)
+    u2.managed_clubs.append(c2)
 
-        u1.preferences.append(p1)
-        u1.followed_clubs.append(c2)
-        u2.managed_clubs.append(c1)
-        u2.managed_clubs.append(c2)
-
-        db.session.add_all([u1, u2, p1, po1, po2, po3, c1, c2, c3])
-        db.session.commit()
-
-    add_items()
+    db.session.add_all([u1, u2, p1, po1, po2, po3, c1, c2, c3])
+    db.session.commit()
 
 
 def query_admin(client, userId):
@@ -70,6 +63,13 @@ def query_followed(client, userId):
 # 类名必须以Test_开头，函数名必须以test_开头
 # 目前的测试只是打印出了几个情况的返回值（需要-s选项）
 class Test_query_admin:
+    def test_init(self):
+        with app.app_context():  # 需要用这句来加载app的上下文环境
+            # 按以下配置重置数据库
+            db.drop_all()
+            db.create_all()
+            add_items()
+
     def test_query_admin1(self, client):
         rv = query_admin(client, 1)
         print(rv.data)
