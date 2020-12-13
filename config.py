@@ -1,3 +1,5 @@
+SECRET_KEY = ''
+
 DIALECT = 'mysql'
 DRIVER = 'pymysql'
 HOST = '127.0.0.1'
