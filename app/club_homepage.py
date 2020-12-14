@@ -16,7 +16,7 @@ def load_homepage():
     club_name = request.form.get('club_name')
     club_obj = Club.query.filter_by(club_name=club_name).first()
     if not club_obj:
-        return "Club do not exist"
+        return jsonify({'error': "club do not exist"})
     else:
         introduction = club_obj.introduction
         president = User.query.filter_by(id=club_obj.president_id).first()
