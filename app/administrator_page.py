@@ -16,15 +16,13 @@ def clubs_info(clubs):
 @administrator_page.route('/administrator/homepage', methods=['POST'])
 def load_homepage():
     # club_name = request.form.get('club_name')
-    # club_obj = Club.query.filter_by(club_name=club_name).first()
-    # if not club_obj:
     #     return jsonify({'error': "club do not exist"})
     if False:
         return jsonify("illegal access")
     else:
-        # clubs = session.query(Club).all()
         # clubs = Club.query.filter_by(Club.id > 0).all()
-        clubs = db.session.query(Club).all()
+        clubs = Club.query.all()
+        # clubs = db.session.query(Club).all()
         club_list = clubs_info(clubs);
         response = jsonify({'club_list': club_list})
         # response.status_code = 200

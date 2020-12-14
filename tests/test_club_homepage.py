@@ -1,6 +1,8 @@
 from exts import db
 from app.models import User, Preference, Club, Post
 from manage import app
+from flask import jsonify
+import json
 
 import pytest
 
@@ -49,20 +51,27 @@ def load_club_homepage(client, club_name):
     url = '/club/homepage'
     return client.post(
         url,
-        data=dict(club_name=club_name)
+        data=json.dumps({'club_name': club_name})
     )
-
 
 class Test_club_homepage:
 
     def test_club_homepage_1(self, client, init_db):
+        print('\n')
         rv = load_club_homepage(client, 'fenglei')
-        print("\n")
+        data = (json.loads(rv.data)).get("error")
         print(rv.data)
+        assert data == "club do not exist"
 
     def test_club_homepage_2(self, client, init_db):
+        # rv = load_club_homepage(client, 'yuanhuo')
         rv = load_club_homepage(client, 'yuanhuo')
         print(rv.data)
+        data = json.loads(rv.data)
+        intro = data.get('introduction')
+        assert intro == 'yuanhuo introduction'
+        president = data.get('president')
+        assert president == "tl"
 
 
 if __name__ == '__main__':

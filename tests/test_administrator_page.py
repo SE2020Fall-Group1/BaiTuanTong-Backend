@@ -1,6 +1,7 @@
 from exts import db
 from app.models import User, Preference, Club, Post
 from manage import app
+import json
 
 import pytest
 
@@ -53,14 +54,14 @@ def load_administrator_page(client):
 
 class Test_club_homepage:
 
-    def test_administrator_page1(self, client, init_db):
+    def test_administrator_page(self, client, init_db):
         rv = load_administrator_page(client)
         print("\n")
         print(rv.data)
-
-    def test_administrator_page2(self, client, init_db):
-        rv = load_administrator_page(client)
-        print(rv.data)
+        club_list = json.loads(rv.data).get('club_list')
+        assert club_list[0] == ['yuanhuo', 'tl']
+        assert club_list[1] == ['feiying', 'dgl']
+        # data == json.loads(rv.data)
 
 
 if __name__ == '__main__':

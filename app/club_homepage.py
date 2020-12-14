@@ -1,5 +1,5 @@
-import json
-from flask import Blueprint, request, jsonify, make_response
+# import json
+from flask import Blueprint, request, jsonify, make_response, json
 from .models import Club, User
 club_homepage = Blueprint('club_homepage', __name__)
 
@@ -13,7 +13,7 @@ def club_posts(posts):
 
 @club_homepage.route('/club/homepage', methods=['POST'])
 def load_homepage():
-    club_name = request.form.get('club_name')
+    club_name = (json.loads(request.get_data(as_text=True))).get('club_name')
     club_obj = Club.query.filter_by(club_name=club_name).first()
     if not club_obj:
         return jsonify({'error': "club do not exist"})
