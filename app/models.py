@@ -18,6 +18,12 @@ user_managing_club = db.Table(
     db.Column('club_id', db.Integer, db.ForeignKey('club.id'), primary_key=True),
 )
 
+user_collecting_post = db.Table(
+    'user_collecting_post',
+    db.Column('user_id', db.Integer, db.ForeignKey('user.id'), primary_key=True),
+    db.Column('post_id', db.Integer, db.ForeignKey('post.id'), primary_key=True),
+)
+
 
 class User(db.Model):
     __tablename__ = 'user'
@@ -28,7 +34,9 @@ class User(db.Model):
     preferences = db.relationship('Preference', secondary=user_preference, backref=db.backref('users'))
     followed_clubs = db.relationship('Club', secondary=user_following_club, backref=db.backref('following_users'))
     managed_clubs = db.relationship('Club', secondary=user_managing_club, backref=db.backref('managing_users'))
-    owned_club = db.relationship('Club', backref=db.backref('president'), uselist=False)
+    owned_clubs = db.relationship('Club', backref=db.backref('president'))
+    collected_posts = db.relationship('Post', secondary=user_collecting_post, backref=db.backref('collecting_users'))
+    comments = db.relationship('Comment', backref=db.backref('commenter'))
 
 
 class Preference(db.Model):
@@ -55,6 +63,7 @@ class Post(db.Model):
     pictures = db.relationship('Picture', backref=db.backref('post'))
     likes = db.relationship('Like', backref=db.backref('post'))
     comments = db.relationship('Comment', backref=db.backref('post'))
+    publish_time = db.Column(db.String(30))
 
 
 class Picture(db.Model):
@@ -65,12 +74,14 @@ class Picture(db.Model):
 
 class Like(db.Model):
     __tablename__ = 'like'
-    user_id = db.Column(db.Integer, primary_key=True)
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, index=True)
     post_id = db.Column(db.Integer, db.ForeignKey('post.id'))
 
 
 class Comment(db.Model):
     __tablename__ = 'comment'
-    user_id = db.Column(db.Integer, primary_key=True)
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     post_id = db.Column(db.Integer, db.ForeignKey('post.id'))
     content = db.Column(db.Text)
