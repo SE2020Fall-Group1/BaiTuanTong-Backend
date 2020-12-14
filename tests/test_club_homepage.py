@@ -47,11 +47,11 @@ def init_db():
         add_items()
 
 
-def load_club_homepage(client, club_name):
-    url = '/club/homepage'
-    return client.post(
-        url,
-        data=json.dumps({'club_name': club_name})
+def load_club_homepage(client, clubName):
+    # url = '/club/homepage'
+    url = '/club/homepage?clubName=%s' % clubName
+    return client.get(
+        url
     )
 
 class Test_club_homepage:
@@ -59,19 +59,24 @@ class Test_club_homepage:
     def test_club_homepage_1(self, client, init_db):
         print('\n')
         rv = load_club_homepage(client, 'fenglei')
-        data = (json.loads(rv.data)).get("error")
+        data = rv.json.get("error")
         print(rv.data)
         assert data == "club do not exist"
 
     def test_club_homepage_2(self, client, init_db):
-        # rv = load_club_homepage(client, 'yuanhuo')
+        print('\n')
         rv = load_club_homepage(client, 'yuanhuo')
         print(rv.data)
-        data = json.loads(rv.data)
+        data = rv.json
         intro = data.get('introduction')
         assert intro == 'yuanhuo introduction'
         president = data.get('president')
         assert president == "tl"
+        postSummary = data.get('postSummary')
+        assert postSummary[0].get('text') == 'jd is too strong'
+        assert postSummary[0].get('title') == 'one'
+        assert postSummary[1].get('text') == 'let\'s compliment jd'
+        assert postSummary[1].get('title') == 'two'
 
 
 if __name__ == '__main__':
