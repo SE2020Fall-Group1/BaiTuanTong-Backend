@@ -45,25 +45,23 @@ def init_db():
         add_items()
 
 
-def load_club_homepage(client, club_name):
-    url = '/club/homepage'
+def load_administrator_page(client):
+    url = '/administrator/homepage'
     return client.post(
-        url,
-        data=dict(club_name=club_name)
+        url
     )
-
 
 class Test_club_homepage:
 
-    def test_club_homepage_1(self, client, init_db):
-        rv = load_club_homepage(client, 'fenglei')
+    def test_administrator_page1(self, client, init_db):
+        rv = load_administrator_page(client)
         print("\n")
         print(rv.data)
 
-    def test_club_homepage_2(self, client, init_db):
-        rv = load_club_homepage(client, 'yuanhuo')
+    def test_administrator_page2(self, client, init_db):
+        rv = load_administrator_page(client)
         print(rv.data)
 
 
 if __name__ == '__main__':
-    pytest.main(['-s', 'test_club_homepage.py'])
+    pytest.main(['-s', 'test_administrator_page.py'])
