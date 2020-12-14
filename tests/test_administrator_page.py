@@ -48,9 +48,10 @@ def init_db():
 
 def load_administrator_page(client):
     url = '/administrator/homepage'
-    return client.post(
+    return client.get(
         url
     )
+
 
 class Test_club_homepage:
 
@@ -58,9 +59,9 @@ class Test_club_homepage:
         rv = load_administrator_page(client)
         print("\n")
         print(rv.data)
-        club_list = json.loads(rv.data).get('club_list')
-        assert club_list[0] == ['yuanhuo', 'tl']
-        assert club_list[1] == ['feiying', 'dgl']
+        clubSummary = rv.json.get('clubSummary')
+        assert clubSummary[0] == {'clubName': 'yuanhuo', 'president_name': 'tl'}
+        assert clubSummary[1] == {'clubName': 'feiying', 'president_name': 'dgl'}
         # data == json.loads(rv.data)
 
 
