@@ -1,3 +1,4 @@
+import datetime
 from exts import db
 
 user_preference = db.Table(
@@ -63,7 +64,7 @@ class Post(db.Model):
     pictures = db.relationship('Picture', backref=db.backref('post'))
     likes = db.relationship('Like', backref=db.backref('post'))
     comments = db.relationship('Comment', backref=db.backref('post'))
-    publish_time = db.Column(db.String(30))
+    publish_time = db.Column(db.DateTime, default=datetime.datetime.now())
 
 
 class Picture(db.Model):

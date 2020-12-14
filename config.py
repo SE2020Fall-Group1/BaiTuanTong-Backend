@@ -5,7 +5,7 @@ DRIVER = 'pymysql'
 HOST = '127.0.0.1'
 PORT = '3306'
 USERNAME = 'root'
-PASSWORD = 'mysql'
+PASSWORD = ''
 DATABASE = 'db_demo'
 SQLALCHEMY_DATABASE_URI = '{}+{}://{}:{}@{}:{}/{}?charset=utf8'.format(DIALECT, DRIVER, USERNAME, PASSWORD, HOST, PORT, DATABASE)
 SQLALCHEMY_TRACK_MODIFICATIONS = False
@@ -15,7 +15,8 @@ CACHE_TYPE = 'simple'
 CACHE_DEFAULT_TIMEOUT = 300
 
 MAIL_SERVER = 'smtp.163.com'
-MAIL_PORT = 25
+MAIL_PORT = 465
+MAIL_USE_SSL = True
 MAIL_USERNAME = "baituantong@163.com"
 MAIL_PASSWORD = ''
 MAIL_DEFAULT_SENDER = "baituantong@163.com"

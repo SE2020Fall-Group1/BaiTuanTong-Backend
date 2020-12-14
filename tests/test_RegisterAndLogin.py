@@ -1,3 +1,4 @@
+import json
 import pytest
 from exts import db, cache
 from manage import app
@@ -23,7 +24,7 @@ def login(client, username, password):
     url = '/user/login'
     return client.post(
         url,
-        data=dict(username=username, password=password),
+        data=json.dumps(dict(username=username, password=password)),
         follow_redirects=True
     )
     # 当请求返回后会跳转页面时，要用follow_redirects=True告诉客户端追踪重定向
@@ -33,7 +34,7 @@ def logout(client, user_id):
     url = '/user/logout'
     return client.post(
         url,
-        data=dict(userId=user_id),
+        data=json.dumps(dict(userId=user_id)),
         follow_redirects=True
     )
 
@@ -42,7 +43,7 @@ def register(client, username, password, email, captcha):
     url = '/user/register'
     return client.post(
         url,
-        data=dict(username=username, password=password, email=email, captcha=captcha),
+        data=json.dumps(dict(username=username, password=password, email=email, captcha=captcha)),
         follow_redirects=True
     )
 
@@ -101,7 +102,9 @@ class Test_login:
     def test_login2(self, client):
         rv = login(client, 'lzh', 'heihei')
         print(rv.data)
-        assert rv.data == b'valid'
+        with app.app_context():
+            user = User.query.filter_by(username='lzh').first()
+        assert rv.json == {'userId': user.id}
         rv = login(client, 'lzh', 'heihei')
         print(rv.data)
         assert rv.data == b'multiple login error'

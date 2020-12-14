@@ -1,3 +1,4 @@
+import json
 import smtplib
 from flask import Blueprint, request, session
 from flask_mail import Message
@@ -10,8 +11,9 @@ register_login = Blueprint('register_login', __name__, url_prefix='/user')
 
 @register_login.route('/login', methods=['POST'])
 def login():
-    username = request.form.get('username')
-    password = request.form.get('password')
+    request_form = json.loads(request.get_data(as_text=True))
+    username = request_form.get('username')
+    password = request_form.get('password')
     user = User.query.filter_by(username=username).first()
     if not user:
         return 'wrong username', 300
@@ -19,18 +21,18 @@ def login():
         if session.get('user_id'):
             return 'multiple login error'
         session['user_id'] = user.id
-        return 'valid'
+        return {'userId': user.id}, 200
     else:
         return 'wrong password', 300
 
 
 @register_login.route('/register', methods=['POST'])
 def register():
-    username = request.form.get('username')
-    password = request.form.get('password')
-    email = request.form.get('email')
-    captcha = request.form.get('captcha')
-    print(cache)
+    request_form = json.loads(request.get_data(as_text=True))
+    username = request_form.get('username')
+    password = request_form.get('password')
+    email = request_form.get('email')
+    captcha = request_form.get('captcha')
     if User.query.filter_by(username=username).first():
         return 'username existed', 300
     elif User.query.filter_by(email=email).first():
@@ -66,7 +68,8 @@ def email_captcha():
 @register_login.route('/logout', methods=['POST'])
 @login_required
 def logout():
-    user_id = request.form.get('userId', type=int)
+    request_form = json.loads(request.get_data(as_text=True))
+    user_id = request_form.get('userId')
     if session.get('user_id') != user_id:
         return 'invalid userId'
     session.pop('userId', None)

@@ -1,5 +1,6 @@
+import json
 from exts import db
-from app.models import User, Preference, Club, Post
+from app.models import User, Preference, Club, Post, Like
 from manage import app
 
 import pytest
@@ -33,28 +34,28 @@ def add_items():
     po2 = Post(title='onekfc', text='jd is too too strong', club_id=1)
     po3 = Post(title='two', text="let's compliment jd", club_id=2)
 
+    li1 = Like(user_id=1, post_id=2)
+
     u1.preferences.append(p1)
     u1.followed_clubs.append(c1)
     u2.managed_clubs.append(c1)
 
-    db.session.add_all([u1, u2, p1, po1, po2, po3, c1, c2, c3])
+    db.session.add_all([u1, u2, p1, li1, po1, po2, po3, c1, c2, c3])
     db.session.commit()
 
 
 def search_club(client, keyword):
-    url = '/club/search'
-    return client.post(
+    url = '/club/search?keyword=%s' % keyword
+    return client.get(
         url,
-        data=dict(keyword=keyword),
         follow_redirects=True
     )
     # 当请求返回后会跳转页面时，要用follow_redirects=True告诉客户端追踪重定向
 
 def search_post(client, keyword):
-    url = '/post/search'
-    return client.post(
+    url = '/post/search?keyword=%s' % keyword
+    return client.get(
         url,
-        data=dict(keyword=keyword),
         follow_redirects=True
     )
 
@@ -82,10 +83,13 @@ class Test_search_post:
     def test_search_post1(self, client):
         rv = search_post(client, 'onekfc')
         print(rv.data)
+        assert rv.json == [{"postId": 2, "title": "onekfc", "text": "jd is too too strong", "clubName": "yuanhuo", "likeCnt": 1}]
     
     def test_search_post2(self, client):
         rv = search_post(client, 'one')
         print(rv.data)
+        assert rv.json == [{"postId": 2, "title": "onekfc", "text": "jd is too too strong", "clubName": "yuanhuo", "likeCnt": 1},
+                           {"postId": 1, "title": "one", "text": "jd is too strong", "clubName": "yuanhuo", "likeCnt": 0}]
 
 
 if __name__ == '__main__':
