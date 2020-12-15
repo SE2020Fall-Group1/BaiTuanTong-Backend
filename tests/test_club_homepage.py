@@ -47,19 +47,19 @@ def init_db():
         add_items()
 
 
-def load_club_homepage(client, clubName):
+def load_club_homepage(client, clubId):
     # url = '/club/homepage'
-    url = '/club/homepage?clubName=%s' % clubName
+    url = '/club/homepage?clubId=%d' % clubId
     return client.get(
         url
     )
 
 
-def change_introduction(client, clubName, newIntroduction):
+def change_introduction(client, clubId, newIntroduction):
     url = '/club/homepage/changeIntroduction'
     return client.post(
         url,
-        data = json.dumps(dict(clubName=clubName, newIntroduction=newIntroduction))
+        data=json.dumps(dict(clubId=clubId, newIntroduction=newIntroduction))
     )
 
 
@@ -67,14 +67,13 @@ class Test_club_homepage:
 
     def test_club_doNotExist(self, client, init_db):
         print('\n')
-        rv = load_club_homepage(client, 'fenglei')
-        data = rv.json.get("data")
+        rv = load_club_homepage(client, 3)
         print(rv.data)
-        assert data == "club do not exist"
+        assert rv.data == b"club do not exist"
 
     def test_correct(self, client, init_db):
         print('\n')
-        rv = load_club_homepage(client, 'yuanhuo')
+        rv = load_club_homepage(client, 1)
         print(rv.data)
         data = rv.json
         intro = data.get('introduction')
@@ -91,9 +90,9 @@ class Test_club_homepage:
 class Test_change_introduction:
 
     def test_club_doNotExist(self, client, init_db):
-        rv = change_introduction(client, 'taobao', 'club taobao do not exist')
+        rv = change_introduction(client, 3, 'club taobao do not exist')
         print(rv.data)
-        assert rv.json.get('data') == 'club do not exist'
+        assert rv.data == b'club do not exist'
 
     def test_correct(self, client, init_db):
         with app.app_context():
@@ -101,11 +100,11 @@ class Test_change_introduction:
             print(club.introduction)
             assert club.introduction == 'yuanhuo introduction'
 
-        rv = change_introduction(client, 'yuanhuo', 'new yuanhuo introduction')
+        rv = change_introduction(client, 1, 'new yuanhuo introduction')
         print(rv.data)
 
         with app.app_context():
-            club = Club.query.filter_by(club_name='yuanhuo').first()
+            club = Club.query.filter_by(id=1).first()
             print(club.introduction)
             assert club.introduction == 'new yuanhuo introduction'
 
