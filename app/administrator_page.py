@@ -19,7 +19,7 @@ def clubs_info(clubs):
 @administrator_page.route('/systemAdmin/homepage', methods=['GET'])
 def load_homepage():
     if False:   # illegal access
-        return {'data': "illegal access"}
+        return "illegal access", 403
     else:
         clubs = Club.query.all()
         # clubs = db.session.query(Club).all()
@@ -32,18 +32,18 @@ def add_club():
     club_name = (json.loads(request.get_data(as_text=True))).get('clubName')
     club = Club.query.filter_by(club_name=club_name).first()
     if club:
-        return {'data': 'club name exist'}, 403
+        return 'club name exist', 403
 
     president_name = (json.loads(request.get_data(as_text=True))).get('president')
     president = User.query.filter_by(username=president_name).first()
     if not president:
-        return {'data': 'president do not exist'}, 403
+        return 'president do not exist', 403
 
     president_id = president.id
     c1 = Club(club_name=club_name, president_id=president_id)
     db.session.add_all([c1])
     db.session.commit()
-    return {'data': 'success'}, 200
+    return 'success', 200
 
 
 @administrator_page.route('/systemAdmin/homepage/deleteClub', methods=['POST'])
@@ -51,11 +51,11 @@ def delete_club():
     club_name = (json.loads(request.get_data(as_text=True))).get('clubName')
     club = Club.query.filter_by(club_name=club_name).first()
     if not club:
-        return {'data': 'club do not exist'}, 403
+        return 'club do not exist', 403
 
     db.session.delete(club)
     db.session.commit()
-    return {'data': 'success'}, 200
+    return 'success', 200
 
 
 @administrator_page.route('/systemAdmin/homepage/changeClubPresident', methods=['POST'])
@@ -63,13 +63,13 @@ def change_club_president():
     club_name = (json.loads(request.get_data(as_text=True))).get('clubName')
     club = Club.query.filter_by(club_name=club_name).first()
     if not club:
-        return {'data': 'club do not exist'}, 403
+        return 'club do not exist', 403
 
     new_president_name = (json.loads(request.get_data(as_text=True))).get('president')
     president = User.query.filter_by(username=new_president_name).first()
     if not president:
-        return {'data': 'new president do not exist'}, 403
+        return 'new president do not exist', 403
 
     club.president_id = president.id
     db.session.commit()
-    return {'data': 'success'}, 200
+    return 'success', 200
