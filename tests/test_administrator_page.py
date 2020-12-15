@@ -47,15 +47,39 @@ def init_db():
 
 
 def load_administrator_page(client):
-    url = '/administrator/homepage'
+    url = '/systemAdmin/homepage'
     return client.get(
         url
     )
 
 
-class Test_club_homepage:
+def add_club(client, clubName, president):
+    url = '/systemAdmin/homepage/addClub'
+    return client.post(
+        url,
+        data=json.dumps(dict(clubName=clubName, president=president))
+    )
 
-    def test_administrator_page(self, client, init_db):
+
+def delete_club(client, clubName):
+    url = '/systemAdmin/homepage/deleteClub'
+    return client.post(
+        url,
+        data=json.dumps(dict(clubName=clubName))
+    )
+
+
+def change_club_president(client, clubName, president):
+    url = '/systemAdmin/homepage/changeClubPresident'
+    return client.post(
+        url,
+        data=json.dumps(dict(clubName=clubName, president=president))
+    )
+
+
+class Test_systemAdmin_page:
+
+    def test_systemAdmin_page(self, client, init_db):
         rv = load_administrator_page(client)
         print("\n")
         print(rv.data)
@@ -63,6 +87,72 @@ class Test_club_homepage:
         assert clubSummary[0] == {'clubName': 'yuanhuo', 'president_name': 'tl'}
         assert clubSummary[1] == {'clubName': 'feiying', 'president_name': 'dgl'}
         # data == json.loads(rv.data)
+
+
+class Test_add_club:
+
+    def test_president_doNotExist(self, client, init_db):
+        rv = add_club(client, 'go', 'lyp')
+        print(rv.data)
+        assert rv.json.get('data') == 'president do not exist'
+
+    def test_club_exist(self, client, init_db):
+        rv = add_club(client, 'yuanhuo', 'tl')
+        print(rv.data)
+        assert rv.json.get('data') == 'club name exist'
+
+    def test_correct(self, client, init_db):
+        rv = add_club(client, 'fenglei', 'tl')
+        print(rv.data)
+        assert rv.json.get('data') == 'success'
+
+
+class Test_delete_club:
+
+    def test_club_doNotExist(self, client, init_db):
+        rv = delete_club(client, 'tianmao')
+        print(rv.data)
+        assert rv.json.get('data') == 'club do not exist'
+
+    def test_correct(self, client, init_db):
+        rv = delete_club(client, 'fenglei')
+        print(rv.data)
+        assert rv.json.get('data') == 'success'
+
+    def test_club_deleted(self, client, init_db):
+        rv = delete_club(client, 'fenglei')
+        print(rv.data)
+        assert rv.json.get('data') == 'club do not exist'
+
+
+class Test_change_club_president:
+
+    def test_club_doNotExist(self, client, init_db):
+        rv = change_club_president(client, 'boxing', 'dgl')
+        print(rv.data)
+        assert rv.json.get('data') == 'club do not exist'
+
+    def test_president_doNotExist(self, client, init_db):
+        rv = change_club_president(client, 'yuanhuo', 'lt')
+        print(rv.data)
+        assert rv.json.get('data') == 'new president do not exist'
+
+    def test_correct(self, client, init_db):
+        with app.app_context():
+            club = Club.query.filter_by(club_name='yuanhuo').first()
+            president = User.query.filter_by(id=club.president_id).first()
+            print(president.username)
+            assert president.username == 'tl'
+
+        rv = change_club_president(client, 'yuanhuo', 'dgl')
+        print(rv.data)
+        assert rv.json.get('data') == 'success'
+
+        with app.app_context():
+            club = Club.query.filter_by(club_name='yuanhuo').first()
+            president = User.query.filter_by(id=club.president_id).first()
+            print(president.username)
+            assert president.username == 'dgl'
 
 
 if __name__ == '__main__':
