@@ -68,9 +68,8 @@ class Test_club_homepage:
     def test_club_doNotExist(self, client, init_db):
         print('\n')
         rv = load_club_homepage(client, 'fenglei')
-        data = rv.json.get("data")
         print(rv.data)
-        assert data == "club do not exist"
+        assert rv.data == b"club do not exist"
 
     def test_correct(self, client, init_db):
         print('\n')
@@ -93,7 +92,7 @@ class Test_change_introduction:
     def test_club_doNotExist(self, client, init_db):
         rv = change_introduction(client, 'taobao', 'club taobao do not exist')
         print(rv.data)
-        assert rv.json.get('data') == 'club do not exist'
+        assert rv.data == b'club do not exist'
 
     def test_correct(self, client, init_db):
         with app.app_context():
@@ -103,6 +102,7 @@ class Test_change_introduction:
 
         rv = change_introduction(client, 'yuanhuo', 'new yuanhuo introduction')
         print(rv.data)
+        assert rv.data == b'success'
 
         with app.app_context():
             club = Club.query.filter_by(club_name='yuanhuo').first()

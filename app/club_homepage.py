@@ -18,7 +18,7 @@ def load_homepage():
     # club_name = (json.loads(request.get_data(as_text=True))).get('clubName')
     club = Club.query.filter_by(club_name=club_name).first()
     if not club:
-        return {'data': "club do not exist"}, 403
+        return "club do not exist", 403
 
     introduction = club.introduction
     president = User.query.filter_by(id=club.president_id).first()
@@ -31,9 +31,9 @@ def change_introduction():
     club_name = (json.loads(request.get_data(as_text=True))).get('clubName')
     club = Club.query.filter_by(club_name=club_name).first()
     if not club:
-        return {'data': 'club do not exist'}, 403
+        return 'club do not exist', 403
 
     new_introduction = (json.loads(request.get_data(as_text=True))).get('newIntroduction')
     club.introduction = new_introduction
     db.session.commit()
-    return {'data': 'success'}, 200
+    return 'success', 200
