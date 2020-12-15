@@ -38,3 +38,4 @@ def change_introduction():
     club.introduction = new_introduction
     db.session.commit()
     return {'data': 'success'}
+
