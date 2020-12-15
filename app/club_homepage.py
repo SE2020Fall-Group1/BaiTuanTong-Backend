@@ -17,7 +17,7 @@ def load_homepage():
     # club_name = (json.loads(request.get_data(as_text=True))).get('clubName')
     club_obj = Club.query.filter_by(club_name=club_name).first()
     if not club_obj:
-        return {'error': "club do not exist"}
+        return {'data': "club do not exist"}
     else:
         introduction = club_obj.introduction
         president = User.query.filter_by(id=club_obj.president_id).first()
