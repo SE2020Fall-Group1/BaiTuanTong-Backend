@@ -102,6 +102,7 @@ class Test_change_introduction:
 
         rv = change_introduction(client, 1, 'new yuanhuo introduction')
         print(rv.data)
+        assert rv.data == b'success'
 
         with app.app_context():
             club = Club.query.filter_by(id=1).first()

@@ -18,13 +18,12 @@ def load_homepage():
     # club_name = (json.loads(request.get_data(as_text=True))).get('clubName')
     club = Club.query.filter_by(id=club_id).first()
     if not club:
-        return "club do not exist"
+        return "club do not exist", 403
 
     introduction = club.introduction
     president = club.president
     postSummary = club_posts(club.posts)
-    return {'introduction': introduction, 'president': president.username, 'postSummary': postSummary}
-    # response.status_code = 200
+    return {'introduction': introduction, 'president': president.username, 'postSummary': postSummary}, 200
 
 
 @club_homepage.route('/club/homepage/changeIntroduction', methods=['POST'])
@@ -32,10 +31,9 @@ def change_introduction():
     club_id = (json.loads(request.get_data(as_text=True))).get('clubId')
     club = Club.query.filter_by(id=club_id).first()
     if not club:
-        return 'club do not exist'
+        return 'club do not exist', 403
 
     new_introduction = (json.loads(request.get_data(as_text=True))).get('newIntroduction')
     club.introduction = new_introduction
     db.session.commit()
-    return 'success'
-
+    return 'success', 200
