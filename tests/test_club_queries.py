@@ -11,7 +11,7 @@ def client(request):
     app.config['TESTING'] = True
     client = app.test_client()
 
-    def teardown():     # 每个测试运行后都会执行该函数
+    def teardown():  # 每个测试运行后都会执行该函数
         app.config['TESTING'] = False
 
     request.addfinalizer(teardown)  # 执行回收函数
@@ -36,26 +36,24 @@ def add_items():
     u1.preferences.append(p1)
     u1.followed_clubs.append(c2)
     u2.managed_clubs.append(c1)
-    u2.managed_clubs.append(c2)
 
     db.session.add_all([u1, u2, p1, po1, po2, po3, c1, c2, c3])
     db.session.commit()
 
 
 def query_admin(client, userId):
-    url = '/club/query/admin'
-    return client.post(
+    url = '/club/query/admin?userId=%d' % userId
+    return client.get(
         url,
-        data=dict(userId=userId),
         follow_redirects=True
     )
     # 当请求返回后会跳转页面时，要用follow_redirects=True告诉客户端追踪重定向
 
+
 def query_followed(client, userId):
-    url = '/club/query/followed'
-    return client.post(
+    url = '/club/query/followed?userId=%d' % userId
+    return client.get(
         url,
-        data=dict(userId=userId),
         follow_redirects=True
     )
 
@@ -73,17 +71,21 @@ class Test_query_admin:
     def test_query_admin1(self, client):
         rv = query_admin(client, 1)
         print(rv.data)
-    
+        assert rv.json == [{"clubId": 2, "clubName": "yuanhuo", "introduction": None, "president": "jhc"}]
+
     def test_query_admin2(self, client):
         rv = query_admin(client, 2)
         print(rv.data)
+        assert rv.json == [{"clubId": 1, "clubName": "feiying", "introduction": None, "president": "gf"},
+                           {"clubId": 3, "clubName": "yuanpei", "introduction": None, "president": "gf"},
+                           {"clubId": 2, "clubName": "yuanhuo", "introduction": None, "president": "jhc"}]
 
 
 class Test_query_followed:
     def test_query_followed1(self, client):
         rv = query_followed(client, 1)
         print(rv.data)
-    
+
     def test_query_followed2(self, client):
         rv = query_followed(client, 2)
         print(rv.data)
