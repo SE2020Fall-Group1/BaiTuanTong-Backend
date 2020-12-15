@@ -59,7 +59,7 @@ class Test_club_homepage:
     def test_club_homepage_1(self, client, init_db):
         print('\n')
         rv = load_club_homepage(client, 'fenglei')
-        data = rv.json.get("error")
+        data = rv.json.get("data")
         print(rv.data)
         assert data == "club do not exist"
 
