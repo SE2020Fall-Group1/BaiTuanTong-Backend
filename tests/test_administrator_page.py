@@ -94,17 +94,17 @@ class Test_add_club:
     def test_president_doNotExist(self, client, init_db):
         rv = add_club(client, 'go', 'lyp')
         print(rv.data)
-        assert rv.json.get('data') == 'president do not exist'
+        assert rv.data == b'president do not exist'
 
     def test_club_exist(self, client, init_db):
         rv = add_club(client, 'yuanhuo', 'tl')
         print(rv.data)
-        assert rv.json.get('data') == 'club name exist'
+        assert rv.data == b'club name exist'
 
     def test_correct(self, client, init_db):
         rv = add_club(client, 'fenglei', 'tl')
         print(rv.data)
-        assert rv.json.get('data') == 'success'
+        assert rv.data == b'success'
 
 
 class Test_delete_club:
@@ -112,17 +112,17 @@ class Test_delete_club:
     def test_club_doNotExist(self, client, init_db):
         rv = delete_club(client, 'tianmao')
         print(rv.data)
-        assert rv.json.get('data') == 'club do not exist'
+        assert rv.data == b'club do not exist'
 
     def test_correct(self, client, init_db):
         rv = delete_club(client, 'fenglei')
         print(rv.data)
-        assert rv.json.get('data') == 'success'
+        assert rv.data == b'success'
 
     def test_club_deleted(self, client, init_db):
         rv = delete_club(client, 'fenglei')
         print(rv.data)
-        assert rv.json.get('data') == 'club do not exist'
+        assert rv.data == b'club do not exist'
 
 
 class Test_change_club_president:
@@ -130,17 +130,29 @@ class Test_change_club_president:
     def test_club_doNotExist(self, client, init_db):
         rv = change_club_president(client, 'boxing', 'dgl')
         print(rv.data)
-        assert rv.json.get('data') == 'club do not exist'
+        assert rv.data == b'club do not exist'
 
     def test_president_doNotExist(self, client, init_db):
         rv = change_club_president(client, 'yuanhuo', 'lt')
         print(rv.data)
-        assert rv.json.get('data') == 'new president do not exist'
+        assert rv.data == b'new president do not exist'
 
     def test_correct(self, client, init_db):
+        with app.app_context():
+            club = Club.query.filter_by(club_name='yuanhuo').first()
+            president = User.query.filter_by(id=club.president_id).first()
+            print(president.username)
+            assert president.username == 'tl'
+
         rv = change_club_president(client, 'yuanhuo', 'dgl')
         print(rv.data)
-        assert rv.json.get('data') == 'success'
+        assert rv.data == b'success'
+
+        with app.app_context():
+            club = Club.query.filter_by(club_name='yuanhuo').first()
+            president = User.query.filter_by(id=club.president_id).first()
+            print(president.username)
+            assert president.username == 'dgl'
 
 
 if __name__ == '__main__':
