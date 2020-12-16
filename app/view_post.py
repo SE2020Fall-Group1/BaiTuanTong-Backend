@@ -1,9 +1,11 @@
 from flask import Blueprint, request
 from .models import Post, Like
+from decorators import login_required
 view_post = Blueprint('view_post', __name__, url_prefix='/post')
 
 
 @view_post.route('/view', methods=['GET'])
+@login_required
 def viewPost():
     user_id = request.args.get('userId')
     post_id = request.args.get('postId')
@@ -17,6 +19,7 @@ def viewPost():
     likeCnt = len(post.likes)
     comments = [{"content": comment.content, "commenterUsername": comment.commenter.username}
                 for comment in post.comments]
+    publish_time = post.publish_time
 
     return {
         "postId": post_id,
@@ -26,5 +29,6 @@ def viewPost():
         "clubName": clubName,
         "likeCnt": likeCnt,
         "isLiked": isLiked,
-        "comments": comments
+        "comments": comments,
+        "publishTime": publish_time
     }

@@ -1,7 +1,7 @@
 import json
 from flask import Blueprint, request
 from decorators import login_required
-from app.models import Post
+from app.models import Post, Club
 from exts import db
 
 manage_post = Blueprint('manage_post', __name__, url_prefix='/post')
@@ -11,9 +11,13 @@ manage_post = Blueprint('manage_post', __name__, url_prefix='/post')
 @login_required
 def release_post():
     request_form = json.loads(request.get_data(as_text=True))
+    club_id = request_form.get('clubId')
     title = request_form.get('title')
     text = request_form.get('text')
-    post = Post(title=title, text=text)
+    club = Club.query.filter_by(id=club_id).one_or_none()
+    if not club:
+        return 'invalid clubId', 400
+    post = Post(title=title, text=text, club_id=club_id)
     try:
         db.session.add(post)
         db.session.commit()
