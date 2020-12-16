@@ -7,5 +7,5 @@ def login_required(func):
     def wrapper(*args, **kwargs):
         if session.get('user_id'):
             return func(*args, **kwargs)
-        return "not login error", 250
+        return "not login error", 401
     return wrapper

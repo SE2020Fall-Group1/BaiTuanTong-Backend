@@ -114,5 +114,27 @@ class Test_change_introduction:
             assert club.introduction == 'new yuanhuo introduction'
 
 
+class Test_change_introduction:
+
+    def test_club_doNotExist(self, client, init_db):
+        rv = change_introduction(client, 3, 'club taobao do not exist')
+        print(rv.data)
+        assert rv.data == b'club do not exist'
+
+    def test_correct(self, client, init_db):
+        with app.app_context():
+            club = Club.query.filter_by(club_name='yuanhuo').first()
+            print(club.introduction)
+            assert club.introduction == 'yuanhuo introduction'
+
+        rv = change_introduction(client, 1, 'new yuanhuo introduction')
+        print(rv.data)
+
+        with app.app_context():
+            club = Club.query.filter_by(id=1).first()
+            print(club.introduction)
+            assert club.introduction == 'new yuanhuo introduction'
+
+
 if __name__ == '__main__':
     pytest.main(['-s', 'test_club_homepage.py'])

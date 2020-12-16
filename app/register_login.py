@@ -4,7 +4,6 @@ from flask import Blueprint, request, session
 from flask_mail import Message
 from exts import db, cache, mail
 from .models import User
-from decorators import login_required
 import numpy as np
 register_login = Blueprint('register_login', __name__, url_prefix='/user')
 
@@ -66,7 +65,6 @@ def email_captcha():
 
 
 @register_login.route('/logout', methods=['POST'])
-@login_required
 def logout():
     request_form = json.loads(request.get_data(as_text=True))
     user_id = request_form.get('userId')
