@@ -1,7 +1,7 @@
 import json
 from manage import app
 from exts import db
-from tests.utils import add_items
+from .utils import add_items
 import pytest
 
 
@@ -40,19 +40,24 @@ class Test_ViewPost:
         rv = viewPost(client, 1, 1)
         print(rv.data)
         response = json.loads(rv.data)
-        assert response["isLiked"] == 1
+        assert response["isLiked"] == True
 
     def test2(self, client):
         rv = viewPost(client, 2, 1)
         print(rv.data)
         response = json.loads(rv.data)
-        assert response["isLiked"] == 0
+        assert response["isLiked"] == False
 
     def test3(self, client):
         rv = viewPost(client, 1, 3)
         print(rv.data)
         assert rv.data == b'invalid postId'
 
+    def test4(self, client):
+        rv = viewPost(client, 5, 2)
+        print(rv.data)
+        assert rv.data == b'invalid userId'
+
 
 if __name__ == '__main__':
-    pytest.main(['-s'])
+    pytest.main(['-s', 'test_ViewPost.py'])

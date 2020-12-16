@@ -1,7 +1,7 @@
 import json
 from flask import Blueprint, request
 from decorators import login_required
-from app.models import Post
+from .models import Post
 from exts import db
 
 manage_post = Blueprint('manage_post', __name__, url_prefix='/post')
