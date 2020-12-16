@@ -85,8 +85,10 @@ class Test_club_homepage:
         postSummary = data.get('postSummary')
         assert postSummary[0].get('text') == 'jd is too strong'
         assert postSummary[0].get('title') == 'one'
+        assert postSummary[0].get('postId') == 1
         assert postSummary[1].get('text') == 'let\'s compliment jd'
         assert postSummary[1].get('title') == 'two'
+        assert postSummary[1].get('postId') == 2
 
 
 class Test_change_introduction:

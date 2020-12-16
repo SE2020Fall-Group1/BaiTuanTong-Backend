@@ -8,7 +8,7 @@ club_homepage = Blueprint('club_homepage', __name__)
 def club_posts(posts):
     ret_info = []
     for post in posts:
-        ret_info.append({'title': post.title, 'text': post.text})
+        ret_info.append({'title': post.title, 'text': post.text, 'postId': post.id})
     return ret_info
 
 
