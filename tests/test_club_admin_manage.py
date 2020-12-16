@@ -1,19 +1,25 @@
 import json
 import pytest
-from exts import db, cache
+from exts import db
 from manage import app
 from tests.utils import add_items
-from app.models import User
+
 
 @pytest.fixture
 def client(request):
     app.config['TESTING'] = True
     client = app.test_client()
 
-    def teardown():     # 每个测试运行后都会执行该函数
+    def teardown():  # 每个测试运行后都会执行该函数
         app.config['TESTING'] = False
+
     request.addfinalizer(teardown)  # 执行回收函数
     return client
+
+
+def get_admin(client, club_id):
+    url = '/club/admin?clubId=%d' % club_id
+    return client.get(url, follow_redirects=True)
 
 
 def add_admin(client, club_id, user_id):
@@ -32,13 +38,22 @@ def delete_admin(client, club_id, user_id):
     )
 
 
-class Test_add_admin:
+class Test_get_admin:
     def test_init(self):
         with app.app_context():
             db.drop_all()
             db.create_all()
             add_items()
 
+    def test1(self, client):
+        with client.session_transaction() as sess:
+            sess['user_id'] = 1
+        rv = get_admin(client, 1)
+        print(rv.data)
+        assert rv.json == {'adminSummary': [{'userId': 2, 'username': 'gf'}]}
+
+
+class Test_add_admin:
     def test1(self, client):
         with client.session_transaction() as sess:
             sess['user_id'] = 1
