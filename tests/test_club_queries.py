@@ -71,24 +71,29 @@ class Test_query_admin:
     def test_query_admin1(self, client):
         rv = query_admin(client, 1)
         print(rv.data)
-        assert rv.json == [{"clubId": 2, "clubName": "yuanhuo", "introduction": None, "president": "jhc"}]
+        assert rv.json == {
+            "clubSummary": [{"clubId": 2, "clubName": "yuanhuo", "introduction": None, "president": "jhc"}]}
 
     def test_query_admin2(self, client):
         rv = query_admin(client, 2)
         print(rv.data)
-        assert rv.json == [{"clubId": 1, "clubName": "feiying", "introduction": None, "president": "gf"},
-                           {"clubId": 3, "clubName": "yuanpei", "introduction": None, "president": "gf"},
-                           {"clubId": 2, "clubName": "yuanhuo", "introduction": None, "president": "jhc"}]
+        assert rv.json == {
+            "clubSummary": [{"clubId": 1, "clubName": "feiying", "introduction": None, "president": "gf"},
+                            {"clubId": 3, "clubName": "yuanpei", "introduction": None, "president": "gf"},
+                            {"clubId": 2, "clubName": "yuanhuo", "introduction": None, "president": "jhc"}]}
 
 
 class Test_query_followed:
     def test_query_followed1(self, client):
         rv = query_followed(client, 1)
         print(rv.data)
+        assert rv.json == {
+            "clubSummary": [{"clubId": 1, "clubName": "feiying", "introduction": None, "president": "gf"}]}
 
     def test_query_followed2(self, client):
         rv = query_followed(client, 2)
         print(rv.data)
+        assert rv.json == {"clubSummary": []}
 
 
 if __name__ == '__main__':

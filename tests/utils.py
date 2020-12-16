@@ -1,15 +1,16 @@
 from exts import db
 from app.models import User, Preference, Club, Post, Like, Comment
 
+
 def add_items():
-    u1 = User(username='jhc', password='hehehe', email='jhc@pku.edu.cn')
-    u2 = User(username='gf', password='gagaga', email='gf@stu.pku.edu.cn')
-    u3 = User(username='zhp', password='hailjd', email='zhp@pku.edu.cn')
+    u1 = User(id=1, username='jhc', password='hehehe', email='jhc@pku.edu.cn')
+    u2 = User(id=2, username='gf', password='gagaga', email='gf@stu.pku.edu.cn')
+    u3 = User(id=3, username='zhp', password='hailjd', email='zhp@pku.edu.cn')
 
     pr1 = Preference(preference_name='kfc')
 
-    c1 = Club(club_name='yuanhuo', president_id=1)
-    c2 = Club(club_name='feiying', president_id=2)
+    c1 = Club(id=1, club_name='yuanhuo', president_id=1)
+    c2 = Club(id=2, club_name='feiying', president_id=2)
 
     po1 = Post(title='one', text='jd is too strong', club_id=1)
     po2 = Post(title='two', text="let's compliment jd", club_id=2)

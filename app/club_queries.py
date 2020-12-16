@@ -21,7 +21,7 @@ def query_admin():
     if not user:
         return 'wrong userId'
     else:
-        return jsonify(get_club_info(user.owned_clubs) + get_club_info(user.managed_clubs))
+        return {"clubSummary": get_club_info(user.owned_clubs) + get_club_info(user.managed_clubs)}
 
 
 @club_queries.route('/club/query/followed', methods=['GET'])
@@ -31,4 +31,4 @@ def query_followed():
     if not user:
         return 'wrong userId'
     else:
-        return jsonify(get_club_info(user.followed_clubs))
+        return {"clubSummary": get_club_info(user.followed_clubs)}
