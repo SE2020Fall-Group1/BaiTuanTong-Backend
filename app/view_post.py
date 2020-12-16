@@ -1,7 +1,5 @@
-import json
 from flask import Blueprint, request, jsonify
-from .models import Post, Like, User
-from .utils import is_valid_user_id
+from .models import Like, Comment
 from exts import db
 from decorators import id_mapping
 
@@ -11,8 +9,8 @@ view_post = Blueprint('view_post', __name__, url_prefix='/post/view')
 
 @view_post.route('/', methods=['GET'])
 @id_mapping(['user', 'post'])
-def viewPost(user, post):
-    clubName = post.club.club_name
+def viewPost(user, post, request_form):
+    club = post.club
     isLiked = post.likes.filter_by(id=user.id).one_or_none() is not None
     likeCnt = len(post.likes.all())
     comments = [{"content": comment.content, "commenterUsername": comment.commenter.username}
@@ -24,7 +22,8 @@ def viewPost(user, post):
         "publishTime": post.publish_time,
         "title": post.title,
         "content": post.text,
-        "clubName": clubName,
+        "clubId": club.id,
+        "clubName": club.club_name,
         "likeCnt": likeCnt,
         "isLiked": isLiked,
         "comments": comments,
@@ -34,13 +33,31 @@ def viewPost(user, post):
 
 @view_post.route('/like', methods=['POST'])
 @id_mapping(['user', 'post'])
-def alter_like(user, post):
+def alter_like(user, post, request_form):
     like = post.likes.filter_by(user_id=user.id).one_or_none()
+    print(like)
     if like:
         db.session.delete(like)
         db.session.commit()
         return 'success', 200
     like = Like(user_id=user.id, post_id=post.id)
-    db.session.add(like)
-    db.commit()
+    print("****", like)
+    try:
+        db.session.add(like)
+        db.session.commit()
+    except Exception as e:
+        return str(e), 500
+    return 'success', 200
+
+
+@view_post.route('/comment', methods=['POST'])
+@id_mapping(['user', 'post'])
+def release_comment(user, post, request_form):
+    comment_text = request_form.get('commentText')
+    comment = Comment(user_id=user.id, post_id=post.id, content=comment_text)
+    try:
+        db.session.add(comment)
+        db.session.commit()
+    except Exception as e:
+        return str(e), 500
     return 'success', 200

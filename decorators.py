@@ -18,7 +18,7 @@ def id_mapping(id_types):
         @wraps(func)
         def wrapper():
             request_form = json.loads(request.get_data(as_text=True)) if request.method == 'POST' else request.args
-            param = {}
+            param = {'request_form': request_form}
             if 'user' in id_types:
                 user_id = request_form.get('userId')
                 user = User.query.filter_by(id=user_id).one_or_none()

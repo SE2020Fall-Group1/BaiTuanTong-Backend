@@ -24,12 +24,9 @@ def get_post_info(posts):
         ret_info.append({"postId": post.id,
                          "title": post.title,
                          "text": post.text,
+                         "clubId": post.club.id,
                          "clubName": post.club.club_name,
                          "likeCnt": len(post.likes.all()),
                          "commentCnt": len(post.comments.all())})
     ret_info = sorted(ret_info, key=lambda x: x['likeCnt'], reverse=True)
     return ret_info
-
-
-def is_valid_user_id(user_id):
-    return User.query.filter_by(id=user_id).one_or_none() is not None

@@ -2,6 +2,7 @@ import json
 from manage import app
 from exts import db
 from .utils import add_items
+from app.models import Post
 import pytest
 
 
@@ -25,11 +26,26 @@ def viewPost(client, user_id, post_id):
         url,
         follow_redirects=True
     )
-    # 当请求返回后会跳转页面时，要用follow_redirects=True告诉客户端追踪重定向
 
 
-# 类名必须以Test_开头，函数名必须以test_开头
-# 目前的测试只是打印出了几个情况的返回值（需要-s选项）
+def alter_like(client, user_id, post_id):
+    url = '/post/view/like'
+    return client.post(
+        url,
+        data=json.dumps(dict(userId=user_id, postId=post_id)),
+        follow_redirects=True
+    )
+
+
+def release_comment(client, user_id, post_id, comment_text):
+    url = '/post/view/comment'
+    return client.post(
+        url,
+        data=json.dumps(dict(userId=user_id, postId=post_id, commentText=comment_text)),
+        follow_redirects=True
+    )
+
+
 class Test_ViewPost:
     def test_init(self):
         with app.app_context():
@@ -43,8 +59,9 @@ class Test_ViewPost:
         response = rv.json
         assert 'publishTime' in response
         response.pop('publishTime')
-        assert response == {"clubName": "yuanhuo", "comments": [{"commenterUsername": "zhp", "content": "i think so."}],
-                            "content": "jd is too strong", "isLiked": True, "likeCnt": 1, "postId": "1",
+        assert response == {"clubId": 1, "clubName": "yuanhuo",
+                            "comments": [{"commenterUsername": "zhp", "content": "i think so."}],
+                            "content": "jd is too strong", "isLiked": True, "likeCnt": 1, "postId": 1,
                             "title": "one"}
 
     def test2(self, client):
@@ -53,8 +70,9 @@ class Test_ViewPost:
         response = rv.json
         assert 'publishTime' in response
         response.pop('publishTime')
-        assert response == {"clubName": "yuanhuo", "comments": [{"commenterUsername": "zhp", "content": "i think so."}],
-                            "content": "jd is too strong", "isLiked": False, "likeCnt": 1, "postId": "1",
+        assert response == {"clubId": 1, "clubName": "yuanhuo",
+                            "comments": [{"commenterUsername": "zhp", "content": "i think so."}],
+                            "content": "jd is too strong", "isLiked": False, "likeCnt": 1, "postId": 1,
                             "title": "one"}
 
     def test3(self, client):
@@ -66,6 +84,33 @@ class Test_ViewPost:
         rv = viewPost(client, 5, 2)
         print(rv.data)
         assert rv.data == b'invalid userId'
+
+
+class Test_alter_like:
+    def test1(self, client):
+        rv = alter_like(client, 1, 2)
+        assert rv.status_code == 200
+        with app.app_context():
+            post = Post.query.filter_by(id=2).one_or_none()
+            print(post.likes)
+            assert post.likes[0].user_id == 1 and post.likes[0].post_id == 2
+
+    def test2(self, client):
+        rv = alter_like(client, 1, 1)
+        assert rv.status_code == 200
+        with app.app_context():
+            post = Post.query.filter_by(id=1).one_or_none()
+            assert not post.likes.all()
+
+
+class Test_release_comment:
+    def test1(self, client):
+        rv = release_comment(client, 1, 2, 'no one is stronger than jd')
+        assert rv.status_code == 200
+        with app.app_context():
+            post = Post.query.filter_by(id=2).one_or_none()
+            print(post.comments)
+            assert post.comments.filter_by(content='no is stronger than jd').user_id == 1
 
 
 if __name__ == '__main__':

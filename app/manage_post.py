@@ -19,8 +19,8 @@ def release_post():
     try:
         db.session.add(post)
         db.session.commit()
-    except Exception:
-        return 'release failed', 500
+    except Exception as e:
+        return str(e), 500
     return 'success', 200
 
 
