@@ -2,8 +2,19 @@ import json
 from flask import Blueprint, request, json
 from decorators import login_required
 from .models import Club, User
+from app.utils import get_user_info
 from exts import db
 club_admin_manage = Blueprint('club_admin_manage', __name__, url_prefix='/club/admin')
+
+
+@club_admin_manage.route('/', methods=['GET'])
+@login_required
+def get_admin():
+    club_id = request.args.get('clubId')
+    club = Club.query.filter_by(id=club_id).one_or_none()
+    if not club:
+        return 'invalid clubId', 400
+    return {"adminSummary": get_user_info(club.managing_users)}, 200
 
 
 @club_admin_manage.route('/add', methods=['POST'])
