@@ -1,6 +1,6 @@
 import json
 from flask import Blueprint, request
-from app.models import Post, Club
+from .models import Post, Club
 from exts import db
 
 manage_post = Blueprint('manage_post', __name__, url_prefix='/post')
@@ -19,8 +19,8 @@ def release_post():
     try:
         db.session.add(post)
         db.session.commit()
-    except Exception:
-        return 'release failed', 500
+    except Exception as e:
+        return str(e), 500
     return 'success', 200
 
 

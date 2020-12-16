@@ -1,3 +1,5 @@
+from .models import User
+
 def get_user_info(users):
     ret_info = []
     for user in users:
@@ -22,9 +24,9 @@ def get_post_info(posts):
         ret_info.append({"postId": post.id,
                          "title": post.title,
                          "text": post.text,
+                         "clubId": post.club.id,
                          "clubName": post.club.club_name,
-                         "likeCnt": len(post.likes),
-                         "commentCnt": len(post.comments)})
+                         "likeCnt": len(post.likes.all()),
+                         "commentCnt": len(post.comments.all())})
     ret_info = sorted(ret_info, key=lambda x: x['likeCnt'], reverse=True)
     return ret_info
-

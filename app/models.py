@@ -38,7 +38,7 @@ class User(db.Model):
     # managed clubs excludes owned_clubs
     owned_clubs = db.relationship('Club', backref=db.backref('president'))
     collected_posts = db.relationship('Post', secondary=user_collecting_post, backref=db.backref('collecting_users'))
-    comments = db.relationship('Comment', backref=db.backref('commenter'))
+    comments = db.relationship('Comment', backref=db.backref('commenter'), lazy='dynamic')
 
 
 class Preference(db.Model):
@@ -63,8 +63,8 @@ class Post(db.Model):
     title = db.Column(db.Text, nullable=False)
     text = db.Column(db.Text)  # length <= 1000
     pictures = db.relationship('Picture', backref=db.backref('post'))
-    likes = db.relationship('Like', backref=db.backref('post'))
-    comments = db.relationship('Comment', backref=db.backref('post'))
+    likes = db.relationship('Like', backref=db.backref('post'), lazy='dynamic')
+    comments = db.relationship('Comment', backref=db.backref('post'), lazy='dynamic')
     publish_time = db.Column(db.DateTime, default=datetime.datetime.now())
 
 
