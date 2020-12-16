@@ -1,7 +1,7 @@
 from flask import Flask
 import config
-from app import register_login, view_post, search, club_queries, manage_post
-from app import club_homepage, administrator_page
+from app import register_login, view_post, search, club_queries, manage_post, club_admin_manage, club_homepage, \
+    administrator_page
 from exts import db, cache, mail
 
 app = Flask(__name__)  # 通过装饰器设置路由方法
@@ -13,6 +13,7 @@ app.register_blueprint(view_post.view_post)
 app.register_blueprint(club_homepage.club_homepage)
 app.register_blueprint(administrator_page.administrator_page)
 app.register_blueprint(manage_post.manage_post)
+app.register_blueprint(club_admin_manage.club_admin_manage)
 
 db.init_app(app)
 cache.init_app(app)
