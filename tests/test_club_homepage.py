@@ -76,6 +76,8 @@ class Test_club_homepage:
         rv = load_club_homepage(client, 1)
         print(rv.data)
         data = rv.json
+        clubName = data.get('clubName')
+        assert clubName == 'yuanhuo'
         intro = data.get('introduction')
         assert intro == 'yuanhuo introduction'
         president = data.get('president')

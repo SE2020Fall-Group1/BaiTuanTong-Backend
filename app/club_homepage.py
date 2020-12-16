@@ -23,7 +23,7 @@ def load_homepage():
     introduction = club.introduction
     president = club.president
     postSummary = club_posts(club.posts)
-    return {'introduction': introduction, 'president': president.username, 'postSummary': postSummary}, 200
+    return {'clubName': club.club_name, 'introduction': introduction, 'president': president.username, 'postSummary': postSummary}, 200
 
 
 @club_homepage.route('/club/homepage/changeIntroduction', methods=['POST'])
