@@ -17,7 +17,7 @@ def clubs_info(clubs):
 
 
 @administrator_page.route('/systemAdmin/homepage', methods=['GET'])
-def load_homepage():
+def load_systemAdmin_page():
     if False:   # illegal access
         return "illegal access", 403
     else:
@@ -32,7 +32,7 @@ def add_club():
     club_name = (json.loads(request.get_data(as_text=True))).get('clubName')
     club = Club.query.filter_by(club_name=club_name).first()
     if club:
-        return 'club name exist', 403
+        return 'club name used', 403
 
     president_name = (json.loads(request.get_data(as_text=True))).get('president')
     president = User.query.filter_by(username=president_name).first()

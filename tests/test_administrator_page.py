@@ -46,7 +46,7 @@ def init_db():
         add_items()
 
 
-def load_administrator_page(client):
+def load_systemAdmin_page(client):
     url = '/systemAdmin/homepage'
     return client.get(
         url
@@ -80,7 +80,7 @@ def change_club_president(client, clubName, president):
 class Test_systemAdmin_page:
 
     def test_systemAdmin_page(self, client, init_db):
-        rv = load_administrator_page(client)
+        rv = load_systemAdmin_page(client)
         print("\n")
         print(rv.data)
         clubSummary = rv.json.get('clubSummary')
@@ -99,7 +99,7 @@ class Test_add_club:
     def test_club_exist(self, client, init_db):
         rv = add_club(client, 'yuanhuo', 'tl')
         print(rv.data)
-        assert rv.data == b'club name exist'
+        assert rv.data == b'club name used'
 
     def test_correct(self, client, init_db):
         rv = add_club(client, 'fenglei', 'tl')
