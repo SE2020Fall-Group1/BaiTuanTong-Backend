@@ -1,11 +1,9 @@
 import json
 import pytest
-from flask import session
 from manage import app
 from tests.utils import add_items
 from exts import db
-from app.models import Post
-from tests.test_RegisterAndLogin import login
+from app.models import Post, Club
 
 
 @pytest.fixture
@@ -22,11 +20,11 @@ def client(request):
     return client
 
 
-def release_post(client, title, text):
+def release_post(client, title, text, club_id):
     url = '/post/release'
     return client.post(
         url,
-        data=json.dumps(dict(title=title, text=text)),
+        data=json.dumps(dict(title=title, text=text, clubId=club_id)),
         follow_redirects=True
     )
 
@@ -59,12 +57,14 @@ class Test_release:
     def test1(self, client):
         with client.session_transaction() as sess:
             sess['user_id'] = 1
-        rv = release_post(client, 'who is tb', 'i am tb')
+        rv = release_post(client, 'who is tb', 'i am tb', 1)
         assert rv.data == b'success'
         with app.app_context():
-            post = Post.query.filter_by(title='who is tb').first()
+            club = Club.query.filter_by(id=1).one_or_none()
+            post = Post.query.filter_by(title='who is tb').one_or_none()
             assert post
             assert post.text == 'i am tb'
+            assert post in club.posts
 
 
 class Test_delete:

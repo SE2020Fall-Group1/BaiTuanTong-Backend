@@ -11,7 +11,7 @@ def client(request):
     app.config['TESTING'] = True
     client = app.test_client()
 
-    def teardown():     # 每个测试运行后都会执行该函数
+    def teardown():  # 每个测试运行后都会执行该函数
         app.config['TESTING'] = False
 
     request.addfinalizer(teardown)  # 执行回收函数
@@ -27,6 +27,7 @@ def viewPost(client, user_id, post_id):
     )
     # 当请求返回后会跳转页面时，要用follow_redirects=True告诉客户端追踪重定向
 
+
 # 类名必须以Test_开头，函数名必须以test_开头
 # 目前的测试只是打印出了几个情况的返回值（需要-s选项）
 class Test_ViewPost:
@@ -39,14 +40,22 @@ class Test_ViewPost:
     def test1(self, client):
         rv = viewPost(client, 1, 1)
         print(rv.data)
-        response = json.loads(rv.data)
-        assert response["isLiked"] == True
+        response = rv.json
+        assert 'publishTime' in response
+        response.pop('publishTime')
+        assert response == {"clubName": "yuanhuo", "comments": [{"commenterUsername": "zhp", "content": "i think so."}],
+                            "content": "jd is too strong", "isLiked": True, "likeCnt": 1, "postId": "1",
+                            "title": "one"}
 
     def test2(self, client):
         rv = viewPost(client, 2, 1)
         print(rv.data)
-        response = json.loads(rv.data)
-        assert response["isLiked"] == False
+        response = rv.json
+        assert 'publishTime' in response
+        response.pop('publishTime')
+        assert response == {"clubName": "yuanhuo", "comments": [{"commenterUsername": "zhp", "content": "i think so."}],
+                            "content": "jd is too strong", "isLiked": False, "likeCnt": 1, "postId": "1",
+                            "title": "one"}
 
     def test3(self, client):
         rv = viewPost(client, 1, 3)

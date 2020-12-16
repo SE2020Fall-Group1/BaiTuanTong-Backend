@@ -17,6 +17,7 @@ def viewPost(user, post):
     likeCnt = len(post.likes.all())
     comments = [{"content": comment.content, "commenterUsername": comment.commenter.username}
                 for comment in post.comments]
+    publish_time = post.publish_time
 
     return {
         "postId": post.id,
@@ -26,7 +27,8 @@ def viewPost(user, post):
         "clubName": clubName,
         "likeCnt": likeCnt,
         "isLiked": isLiked,
-        "comments": comments
+        "comments": comments,
+        "publishTime": publish_time
     }
 
 
