@@ -12,7 +12,7 @@ def client(request):
     app.config['TESTING'] = True
     client = app.test_client()
 
-    def teardown():     # 每个测试运行后都会执行该函数
+    def teardown():  # 每个测试运行后都会执行该函数
         app.config['TESTING'] = False
 
     request.addfinalizer(teardown)  # 执行回收函数
@@ -52,6 +52,7 @@ def search_club(client, keyword):
     )
     # 当请求返回后会跳转页面时，要用follow_redirects=True告诉客户端追踪重定向
 
+
 def search_post(client, keyword):
     url = '/post/search?keyword=%s' % keyword
     return client.get(
@@ -73,7 +74,7 @@ class Test_search_club:
     def test_search_club1(self, client):
         rv = search_club(client, 'yuanhuo')
         print(rv.data)
-    
+
     def test_search_club2(self, client):
         rv = search_club(client, 'yuan')
         print(rv.data)
@@ -83,16 +84,16 @@ class Test_search_post:
     def test_search_post1(self, client):
         rv = search_post(client, 'onekfc')
         print(rv.data)
-        assert rv.json == [{"postId": 2, "title": "onekfc", "text": "jd is too too strong",
-                            "clubName": "yuanhuo", "likeCnt": 1, "commentCnt": 0}]
-    
+        assert rv.json == {"postSummary": [{"postId": 2, "title": "onekfc", "text": "jd is too too strong",
+                                            "clubName": "yuanhuo", "likeCnt": 1, "commentCnt": 0}]}
+
     def test_search_post2(self, client):
         rv = search_post(client, 'one')
         print(rv.data)
-        assert rv.json == [{"postId": 2, "title": "onekfc", "text": "jd is too too strong",
-                            "clubName": "yuanhuo", "likeCnt": 1, "commentCnt": 0},
-                           {"postId": 1, "title": "one", "text": "jd is too strong",
-                            "clubName": "yuanhuo", "likeCnt": 0, "commentCnt": 0}]
+        assert rv.json == {"postSummary": [{"postId": 2, "title": "onekfc", "text": "jd is too too strong",
+                                            "clubName": "yuanhuo", "likeCnt": 1, "commentCnt": 0},
+                                           {"postId": 1, "title": "one", "text": "jd is too strong",
+                                            "clubName": "yuanhuo", "likeCnt": 0, "commentCnt": 0}]}
 
 
 if __name__ == '__main__':
