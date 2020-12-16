@@ -1,6 +1,5 @@
 import json
 from flask import Blueprint, request
-from decorators import login_required
 from app.models import Post, Club
 from exts import db
 
@@ -8,7 +7,6 @@ manage_post = Blueprint('manage_post', __name__, url_prefix='/post')
 
 
 @manage_post.route('/release', methods=['POST'])
-@login_required
 def release_post():
     request_form = json.loads(request.get_data(as_text=True))
     club_id = request_form.get('clubId')
@@ -27,7 +25,6 @@ def release_post():
 
 
 @manage_post.route('/delete', methods=['POST'])
-@login_required
 def delete_post():
     request_form = json.loads(request.get_data(as_text=True))
     post_id = request_form.get('postId')
@@ -43,7 +40,6 @@ def delete_post():
 
 
 @manage_post.route('/edit', methods=['POST'])
-@login_required
 def edit_post():
     request_form = json.loads(request.get_data(as_text=True))
     post_id = request_form.get('postId')

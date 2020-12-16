@@ -1,6 +1,5 @@
 import json
 from flask import Blueprint, request, json
-from decorators import login_required
 from .models import Club, User
 from app.utils import get_user_info
 from exts import db
@@ -8,7 +7,6 @@ club_admin_manage = Blueprint('club_admin_manage', __name__, url_prefix='/club/a
 
 
 @club_admin_manage.route('/', methods=['GET'])
-@login_required
 def get_admin():
     club_id = request.args.get('clubId')
     club = Club.query.filter_by(id=club_id).one_or_none()
@@ -18,7 +16,6 @@ def get_admin():
 
 
 @club_admin_manage.route('/add', methods=['POST'])
-@login_required
 def add_admin():
     request_form = json.loads(request.get_data(as_text=True))
     user_id = request_form.get('userId')
@@ -40,7 +37,6 @@ def add_admin():
 
 
 @club_admin_manage.route('/delete', methods=['POST'])
-@login_required
 def delete_admin():
     request_form = json.loads(request.get_data(as_text=True))
     user_id = request_form.get('userId')
