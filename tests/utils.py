@@ -2,9 +2,9 @@ from exts import db
 from app.models import User, Preference, Club, Post, Like, Comment
 
 def add_items():
-    u1 = User(username='jhc', password='hehe', email='jhc@pku.edu.cn')
-    u2 = User(username='gf', password='gaga', email='gf@stu.pku.edu.cn')
-    u3 = User(username='zhp', password='hail', email='zhp@pku.edu.cn')
+    u1 = User(username='jhc', password='hehehe', email='jhc@pku.edu.cn')
+    u2 = User(username='gf', password='gagaga', email='gf@stu.pku.edu.cn')
+    u3 = User(username='zhp', password='hailjd', email='zhp@pku.edu.cn')
 
     pr1 = Preference(preference_name='kfc')
 
