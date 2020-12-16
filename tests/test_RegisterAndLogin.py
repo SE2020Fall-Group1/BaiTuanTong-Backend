@@ -113,6 +113,8 @@ class Test_login:
         rv = login(client, 'lzh', 'heihei')
         print(rv.data)
         assert rv.data == b'multiple login error'
+        with client.session_transaction() as sess:
+            assert sess['user_id'] == user.id
 
     def test_login3(self, client):
         rv = login(client, 'lzh', 'gaga')
