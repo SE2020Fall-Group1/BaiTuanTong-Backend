@@ -76,6 +76,8 @@ class Test_club_homepage:
         rv = load_club_homepage(client, 1)
         print(rv.data)
         data = rv.json
+        clubName = data.get('clubName')
+        assert clubName == 'yuanhuo'
         intro = data.get('introduction')
         assert intro == 'yuanhuo introduction'
         president = data.get('president')
@@ -83,8 +85,10 @@ class Test_club_homepage:
         postSummary = data.get('postSummary')
         assert postSummary[0].get('text') == 'jd is too strong'
         assert postSummary[0].get('title') == 'one'
+        assert postSummary[0].get('postId') == 1
         assert postSummary[1].get('text') == 'let\'s compliment jd'
         assert postSummary[1].get('title') == 'two'
+        assert postSummary[1].get('postId') == 2
 
 
 class Test_change_introduction:
@@ -103,6 +107,28 @@ class Test_change_introduction:
         rv = change_introduction(client, 1, 'new yuanhuo introduction')
         print(rv.data)
         assert rv.data == b'success'
+
+        with app.app_context():
+            club = Club.query.filter_by(id=1).first()
+            print(club.introduction)
+            assert club.introduction == 'new yuanhuo introduction'
+
+
+class Test_change_introduction:
+
+    def test_club_doNotExist(self, client, init_db):
+        rv = change_introduction(client, 3, 'club taobao do not exist')
+        print(rv.data)
+        assert rv.data == b'club do not exist'
+
+    def test_correct(self, client, init_db):
+        with app.app_context():
+            club = Club.query.filter_by(club_name='yuanhuo').first()
+            print(club.introduction)
+            assert club.introduction == 'yuanhuo introduction'
+
+        rv = change_introduction(client, 1, 'new yuanhuo introduction')
+        print(rv.data)
 
         with app.app_context():
             club = Club.query.filter_by(id=1).first()
