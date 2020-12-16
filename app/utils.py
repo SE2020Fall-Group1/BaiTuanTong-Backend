@@ -1,5 +1,3 @@
-from .models import User
-
 def get_user_info(users):
     ret_info = []
     for user in users:
@@ -18,7 +16,7 @@ def get_club_info(clubs):
     return ret_info
 
 
-def get_post_info(posts):
+def get_post_info(posts, sort_key=None):
     ret_info = []
     for post in posts:
         ret_info.append({"postId": post.id,
@@ -27,6 +25,8 @@ def get_post_info(posts):
                          "clubId": post.club.id,
                          "clubName": post.club.club_name,
                          "likeCnt": len(post.likes.all()),
-                         "commentCnt": len(post.comments.all())})
-    ret_info = sorted(ret_info, key=lambda x: x['likeCnt'], reverse=True)
+                         "commentCnt": len(post.comments.all()),
+                         "publishTime": post.publish_time})
+    if sort_key:
+        ret_info = sorted(ret_info, key=lambda x: x[sort_key], reverse=True)
     return ret_info
