@@ -92,6 +92,11 @@ class Test_register:
         rv = register(client, 'tbw', r'jojo', r'tbw@pku.edu.cn', '123')
         assert rv.data == b'user established'
 
+    def test_register7(self, client):
+        cache.set('wls@pku.edu.cn', '123')
+        rv = register(client, '王蓝绅', r'jojojo', r'wls@pku.edu.cn', '123')
+        assert rv.data == b'user established'
+
 
 class Test_login:
     def test_login1(self, client):
@@ -108,6 +113,8 @@ class Test_login:
         rv = login(client, 'lzh', 'heihei')
         print(rv.data)
         assert rv.data == b'multiple login error'
+        with client.session_transaction() as sess:
+            assert sess['user_id'] == user.id
 
     def test_login3(self, client):
         rv = login(client, 'lzh', 'gaga')

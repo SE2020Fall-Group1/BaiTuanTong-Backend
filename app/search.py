@@ -22,7 +22,8 @@ def extract_post_info(posts):
                          "title": post.title,
                          "text": post.text,
                          "clubName": post.club.club_name,
-                         "likeCnt": len(post.likes)})
+                         "likeCnt": len(post.likes),
+                         "commentCnt": len(post.comments)})
     return sorted(ret_info, key=lambda x: x['likeCnt'], reverse=True)
 
 

@@ -35,6 +35,7 @@ class User(db.Model):
     preferences = db.relationship('Preference', secondary=user_preference, backref=db.backref('users'))
     followed_clubs = db.relationship('Club', secondary=user_following_club, backref=db.backref('following_users'))
     managed_clubs = db.relationship('Club', secondary=user_managing_club, backref=db.backref('managing_users'))
+    # managed clubs excludes owned_clubs
     owned_clubs = db.relationship('Club', backref=db.backref('president'))
     collected_posts = db.relationship('Post', secondary=user_collecting_post, backref=db.backref('collecting_users'))
     comments = db.relationship('Comment', backref=db.backref('commenter'))
