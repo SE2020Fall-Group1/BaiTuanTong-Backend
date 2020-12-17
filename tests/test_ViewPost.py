@@ -93,8 +93,9 @@ class Test_alter_like:
         assert rv.status_code == 200
         with app.app_context():
             post = Post.query.filter_by(id=2).one_or_none()
-            print(post.likes)
             assert post.likes[0].user_id == 1 and post.likes[0].post_id == 2
+        rv = viewPost(client, 1, 2)
+        assert rv.json['isLiked']
 
     def test2(self, client):
         rv = alter_like(client, 1, 1)

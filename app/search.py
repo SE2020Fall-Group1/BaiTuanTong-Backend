@@ -15,6 +15,4 @@ def search_club():
 def search_post():
     keyword = request.args.get('keyword')
     posts = Post.query.filter(Post.title.contains(keyword)).all()
-    print(keyword)
-    print(posts)
     return {"postSummary": get_post_info(posts, sort_key='likeCnt')}
