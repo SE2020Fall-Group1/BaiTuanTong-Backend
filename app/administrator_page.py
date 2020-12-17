@@ -37,7 +37,7 @@ def add_club():
     president_name = (json.loads(request.get_data(as_text=True))).get('president')
     president = User.query.filter_by(username=president_name).first()
     if not president:
-        return 'president do not exist', 403
+        return 'invalid username', 403
 
     president_id = president.id
     c1 = Club(club_name=club_name, president_id=president_id)
@@ -51,7 +51,7 @@ def delete_club():
     club_name = (json.loads(request.get_data(as_text=True))).get('clubName')
     club = Club.query.filter_by(club_name=club_name).first()
     if not club:
-        return 'club do not exist', 403
+        return 'invalid clubname', 403
 
     db.session.delete(club)
     db.session.commit()
@@ -63,12 +63,12 @@ def change_club_president():
     club_name = (json.loads(request.get_data(as_text=True))).get('clubName')
     club = Club.query.filter_by(club_name=club_name).first()
     if not club:
-        return 'club do not exist', 403
+        return 'invalid clubname', 403
 
     new_president_name = (json.loads(request.get_data(as_text=True))).get('president')
     president = User.query.filter_by(username=new_president_name).first()
     if not president:
-        return 'new president do not exist', 403
+        return 'invalid username', 403
 
     club.president_id = president.id
     db.session.commit()
