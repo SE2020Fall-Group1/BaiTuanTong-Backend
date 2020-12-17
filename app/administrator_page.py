@@ -8,7 +8,7 @@ administrator_page = Blueprint('administrator_page', __name__)
 def clubs_info(clubs):
     ret_info = []
     for club in clubs:
-        president_name = User.query.filter_by(id=club.president_id).first().username
+        president_name = club.president.username
         ret_info.append({
             'clubName': club.club_name,
             'president_name': president_name

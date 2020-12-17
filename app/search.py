@@ -1,8 +1,6 @@
-import json
 from flask import Blueprint, request, jsonify
-from exts import db
 from .models import User, Club, Post
-from app.utils import get_club_info, get_post_info
+from .utils import get_club_info, get_post_info
 search = Blueprint('search', __name__)
 
 
@@ -17,10 +15,4 @@ def search_club():
 def search_post():
     keyword = request.args.get('keyword')
     posts = Post.query.filter(Post.title.contains(keyword)).all()
-    return {"postSummary": get_post_info(posts)}
-
-
-@search.route('/post/homepage', methods=['GET'])
-def push_post():
-    posts = Post.query.all()
-    return {"postSummary": get_post_info(posts)}
+    return {"postSummary": get_post_info(posts, sort_key='likeCnt')}

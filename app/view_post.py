@@ -1,9 +1,7 @@
-from flask import Blueprint, request, jsonify
+from flask import Blueprint
 from .models import Like, Comment
 from exts import db
 from decorators import id_mapping
-
-
 view_post = Blueprint('view_post', __name__, url_prefix='/post/view')
 
 
@@ -11,11 +9,10 @@ view_post = Blueprint('view_post', __name__, url_prefix='/post/view')
 @id_mapping(['user', 'post'])
 def viewPost(user, post, request_form):
     club = post.club
-    isLiked = post.likes.filter_by(id=user.id).one_or_none() is not None
+    isLiked = post.likes.filter_by(user_id=user.id).one_or_none() is not None
     likeCnt = len(post.likes.all())
     comments = [{"content": comment.content, "commenterUsername": comment.commenter.username}
                 for comment in post.comments]
-    publish_time = post.publish_time
 
     return {
         "postId": post.id,
@@ -27,7 +24,6 @@ def viewPost(user, post, request_form):
         "likeCnt": likeCnt,
         "isLiked": isLiked,
         "comments": comments,
-        "publishTime": publish_time
     }
 
 
@@ -35,13 +31,11 @@ def viewPost(user, post, request_form):
 @id_mapping(['user', 'post'])
 def alter_like(user, post, request_form):
     like = post.likes.filter_by(user_id=user.id).one_or_none()
-    print(like)
     if like:
         db.session.delete(like)
         db.session.commit()
         return 'success', 200
     like = Like(user_id=user.id, post_id=post.id)
-    print("****", like)
     try:
         db.session.add(like)
         db.session.commit()

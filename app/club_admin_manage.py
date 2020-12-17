@@ -24,7 +24,6 @@ def add_admin():
     if not user:
         return 'invalid userId', 400
     club = Club.query.filter_by(id=club_id).one_or_none()
-    print(club_id, user_id)
     if not club:
         return 'invalid clubId', 400
     if club in user.owned_clubs:

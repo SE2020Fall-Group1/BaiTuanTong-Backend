@@ -46,6 +46,7 @@ def release_comment(client, user_id, post_id, comment_text):
     )
 
 
+
 class Test_ViewPost:
     def test_init(self):
         with app.app_context():
@@ -76,7 +77,7 @@ class Test_ViewPost:
                             "title": "one"}
 
     def test3(self, client):
-        rv = viewPost(client, 1, 3)
+        rv = viewPost(client, 1, 4)
         print(rv.data)
         assert rv.data == b'invalid postId'
 
@@ -92,8 +93,9 @@ class Test_alter_like:
         assert rv.status_code == 200
         with app.app_context():
             post = Post.query.filter_by(id=2).one_or_none()
-            print(post.likes)
             assert post.likes[0].user_id == 1 and post.likes[0].post_id == 2
+        rv = viewPost(client, 1, 2)
+        assert rv.json['isLiked']
 
     def test2(self, client):
         rv = alter_like(client, 1, 1)
@@ -110,7 +112,7 @@ class Test_release_comment:
         with app.app_context():
             post = Post.query.filter_by(id=2).one_or_none()
             print(post.comments)
-            assert post.comments.filter_by(content='no is stronger than jd').user_id == 1
+            assert post.comments.filter_by(content='no one is stronger than jd').first().user_id == 1
 
 
 if __name__ == '__main__':
