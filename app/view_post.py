@@ -1,9 +1,7 @@
-from flask import Blueprint, request, jsonify
+from flask import Blueprint
 from .models import Like, Comment
 from exts import db
 from decorators import id_mapping
-
-
 view_post = Blueprint('view_post', __name__, url_prefix='/post/view')
 
 
@@ -15,7 +13,6 @@ def viewPost(user, post, request_form):
     likeCnt = len(post.likes.all())
     comments = [{"content": comment.content, "commenterUsername": comment.commenter.username}
                 for comment in post.comments]
-    publish_time = post.publish_time
 
     return {
         "postId": post.id,
@@ -27,7 +24,6 @@ def viewPost(user, post, request_form):
         "likeCnt": likeCnt,
         "isLiked": isLiked,
         "comments": comments,
-        "publishTime": publish_time
     }
 
 

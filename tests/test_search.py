@@ -84,13 +84,18 @@ class Test_search_post:
     def test_search_post1(self, client):
         rv = search_post(client, 'onekfc')
         print(rv.data)
-        assert rv.json == {"postSummary": [{"postId": 2, "title": "onekfc", "text": "jd is too too strong", "clubId": 1,
+        response = rv.json
+        for post in response['postSummary']:
+            post.pop('publishTime')
+        assert response == {"postSummary": [{"postId": 2, "title": "onekfc", "text": "jd is too too strong", "clubId": 1,
                                             "clubName": "yuanhuo", "likeCnt": 1, "commentCnt": 0}]}
 
     def test_search_post2(self, client):
         rv = search_post(client, 'one')
-        print(rv.data)
-        assert rv.json == {"postSummary": [{"postId": 2, "title": "onekfc", "text": "jd is too too strong", "clubId": 1,
+        response = rv.json
+        for post in response['postSummary']:
+            post.pop('publishTime')
+        assert response == {"postSummary": [{"postId": 2, "title": "onekfc", "text": "jd is too too strong", "clubId": 1,
                                             "clubName": "yuanhuo", "likeCnt": 1, "commentCnt": 0},
                                            {"postId": 1, "title": "one", "text": "jd is too strong", "clubId": 1,
                                             "clubName": "yuanhuo", "likeCnt": 0, "commentCnt": 0}]}

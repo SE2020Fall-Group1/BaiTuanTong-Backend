@@ -34,8 +34,8 @@ def delete_post():
     try:
         db.session.delete(post)
         db.session.commit()
-    except Exception:
-        return 'delete failed', 500
+    except Exception as e:
+        return str(e), 500
     return 'success', 200
 
 
@@ -50,6 +50,6 @@ def edit_post():
     try:
         post.text = text
         db.session.commit()
-    except Exception:
-        return 'edit failed', 500
+    except Exception as e:
+        return str(e), 500
     return 'success', 200
