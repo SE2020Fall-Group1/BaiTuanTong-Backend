@@ -28,6 +28,14 @@ def viewPost(client, user_id, post_id):
     )
 
 
+def viewPostInfo(client, user_id, post_id):
+    url = '/post/view/info?userId=%s&postId=%s' % (user_id, post_id)
+    return client.get(
+        url,
+        follow_redirects=True
+    )
+
+
 def alter_like(client, user_id, post_id):
     url = '/post/view/like'
     return client.post(
@@ -83,6 +91,36 @@ class Test_ViewPost:
 
     def test4(self, client):
         rv = viewPost(client, 5, 2)
+        print(rv.data)
+        assert rv.data == b'invalid userId'
+
+
+class Test_viewPostInfo:
+    def test_init(self):
+        with app.app_context():
+            db.drop_all()
+            db.create_all()
+            add_items()
+
+    def test1(self, client):
+        rv = viewPostInfo(client, 1, 1)
+        print(rv.data)
+        response = rv.json
+        assert response == {"isLiked": True, "likeCnt": 1, "commentCnt": 1,}
+
+    def test2(self, client):
+        rv = viewPostInfo(client, 2, 1)
+        print(rv.data)
+        response = rv.json
+        assert response == {"isLiked": False, "likeCnt": 1, "commentCnt": 1,}
+
+    def test3(self, client):
+        rv = viewPostInfo(client, 1, 4)
+        print(rv.data)
+        assert rv.data == b'invalid postId'
+
+    def test4(self, client):
+        rv = viewPostInfo(client, 5, 2)
         print(rv.data)
         assert rv.data == b'invalid userId'
 
