@@ -2,6 +2,7 @@ import json
 from flask import Blueprint, request, json
 from .models import Club, User
 from exts import db
+from decorators import id_mapping
 club_homepage = Blueprint('club_homepage', __name__)
 
 
@@ -13,31 +14,18 @@ def club_posts(posts):
 
 
 @club_homepage.route('/club/homepage', methods=['GET'])
-def load_homepage():
-    club_id = request.args.get('clubId')
-    # club_name = (json.loads(request.get_data(as_text=True))).get('clubName')
-    club = Club.query.filter_by(id=club_id).first()
-    if not club:
-
-        return "club do not exist", 403
-
-
+@id_mapping('clubId')
+def load_homepage(club, request_form):
     introduction = club.introduction
     president = club.president
     postSummary = club_posts(club.posts)
     return {'clubName': club.club_name, 'introduction': introduction, 'president': president.username, 'postSummary': postSummary}, 200
 
 
-
 @club_homepage.route('/club/homepage/changeIntroduction', methods=['POST'])
-def change_introduction():
-    club_id = (json.loads(request.get_data(as_text=True))).get('clubId')
-    club = Club.query.filter_by(id=club_id).first()
-    if not club:
-        return 'club do not exist', 403
-
-
-    new_introduction = (json.loads(request.get_data(as_text=True))).get('newIntroduction')
+@id_mapping('clubId')
+def change_introduction(club, request_form):
+    new_introduction = request_form.get('newIntroduction')
     club.introduction = new_introduction
     db.session.commit()
     return 'success', 200
