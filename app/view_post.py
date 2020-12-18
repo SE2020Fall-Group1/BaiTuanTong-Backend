@@ -30,6 +30,7 @@ def viewPost(user, post, request_form):
 @view_post.route('/like', methods=['POST'])
 @id_mapping(['user', 'post'])
 def alter_like(user, post, request_form):
+    post.likes.with_for_update()
     like = post.likes.filter_by(user_id=user.id).one_or_none()
     if like:
         db.session.delete(like)
