@@ -1,5 +1,5 @@
 from flask import Blueprint
-from .models import Like, Comment
+from app.models import Like, Comment
 from exts import db
 from decorators import id_mapping
 view_post = Blueprint('view_post', __name__, url_prefix='/post/view')
@@ -24,6 +24,20 @@ def viewPost(user, post, request_form):
         "likeCnt": likeCnt,
         "isLiked": isLiked,
         "comments": comments,
+    }
+
+
+@view_post.route('/info', methods=['GET'])
+@id_mapping(['user', 'post'])
+def viewPostInfo(user, post, request_form):
+    isLiked = post.likes.filter_by(user_id=user.id).one_or_none() is not None
+    likeCnt = len(post.likes.all())
+    commentCnt = len(post.comments.all())
+
+    return {
+        "isLiked": isLiked,
+        "likeCnt": likeCnt,
+        "commentCnt": commentCnt
     }
 
 
