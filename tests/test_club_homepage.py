@@ -69,7 +69,7 @@ class Test_club_homepage:
         print('\n')
         rv = load_club_homepage(client, 3)
         print(rv.data)
-        assert rv.data == b"club do not exist"
+        assert rv.data == b"invalid clubId"
 
     def test_correct(self, client, init_db):
         print('\n')
@@ -96,7 +96,7 @@ class Test_change_introduction:
     def test_club_doNotExist(self, client, init_db):
         rv = change_introduction(client, 3, 'club taobao do not exist')
         print(rv.data)
-        assert rv.data == b'club do not exist'
+        assert rv.data == b'invalid clubId'
 
     def test_correct(self, client, init_db):
         with app.app_context():
@@ -119,7 +119,7 @@ class Test_change_introduction:
     def test_club_doNotExist(self, client, init_db):
         rv = change_introduction(client, 3, 'club taobao do not exist')
         print(rv.data)
-        assert rv.data == b'club do not exist'
+        assert rv.data == b'invalid clubId'
 
     def test_correct(self, client, init_db):
         with app.app_context():
