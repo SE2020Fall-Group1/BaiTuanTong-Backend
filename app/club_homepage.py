@@ -30,3 +30,15 @@ def change_introduction(club, request_form):
     db.session.commit()
     return 'success', 200
 
+
+@club_homepage.route('/club/follow', methods=['POST'])
+@id_mapping(['user', 'club'])
+def follow_club(user, club, request_form):
+    is_followed = user.followed_clubs.filter_by(id=club.id).with_for_update().one_or_none() is not None
+    if is_followed:
+        user.followed_clubs.remove(club)
+        db.session.commit()
+        return "follow cancelled", 200
+    user.followed_clubs.append(club)
+    db.session.commit()
+    return 'follow committed', 200
