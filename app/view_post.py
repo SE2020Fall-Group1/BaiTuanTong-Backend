@@ -44,8 +44,7 @@ def viewPostInfo(user, post, request_form):
 @view_post.route('/like', methods=['POST'])
 @id_mapping(['user', 'post'])
 def alter_like(user, post, request_form):
-    post.likes.with_for_update()
-    like = post.likes.filter_by(user_id=user.id).one_or_none()
+    like = post.likes.filter_by(user_id=user.id).with_for_update().one_or_none()
     if like:
         db.session.delete(like)
         db.session.commit()
@@ -70,3 +69,16 @@ def release_comment(user, post, request_form):
     except Exception as e:
         return str(e), 500
     return 'success', 200
+
+
+@view_post.route('/collect', methods=['POST'])
+@id_mapping(['user', 'post'])
+def collect_post(user, post, request_form):
+    is_collected = user.collected_posts.filter_by(id=post.id).with_for_update().one_or_none() is not None
+    if is_collected:
+        user.collected_posts.remove(post)
+        db.session.commit()
+        return 'collection cancelled', 200
+    user.collected_posts.append(post)
+    db.session.commit()
+    return 'collection added', 200

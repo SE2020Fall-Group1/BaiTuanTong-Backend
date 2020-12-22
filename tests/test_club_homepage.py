@@ -63,6 +63,14 @@ def change_introduction(client, clubId, newIntroduction):
     )
 
 
+def follow_club(client, userId, clubId):
+    url = '/club/follow'
+    return client.post(
+        url,
+        data=json.dumps(dict(userId=userId, clubId=clubId))
+    )
+
+
 class Test_club_homepage:
 
     def test_club_doNotExist(self, client, init_db):
@@ -134,6 +142,23 @@ class Test_change_introduction:
             club = Club.query.filter_by(id=1).first()
             print(club.introduction)
             assert club.introduction == 'new yuanhuo introduction'
+
+
+class Test_follow_club:
+
+    def test1(self, client):
+        rv = follow_club(client, 1, 2)
+        assert rv.data == b'follow committed'
+        with app.app_context():
+            user = User.query.filter_by(id=1).one_or_none()
+            assert user.followed_clubs.filter_by(id=2).one_or_none()
+
+    def test2(self, client):
+        rv = follow_club(client, 1, 2)
+        assert rv.data == b'follow cancelled'
+        with app.app_context():
+            user = User.query.filter_by(id=1).one_or_none()
+            assert user.followed_clubs.filter_by(id=2).one_or_none() is None
 
 
 if __name__ == '__main__':

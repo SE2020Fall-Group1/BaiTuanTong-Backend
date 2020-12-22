@@ -38,11 +38,11 @@ def delete_post(client, post_id):
     )
 
 
-def edit_post(client, post_id, text):
+def edit_post(client, post_id, title, text):
     url = '/post/edit'
     return client.post(
         url,
-        data=json.dumps(dict(postId=post_id, text=text)),
+        data=json.dumps(dict(postId=post_id, title=title, text=text)),
         follow_redirects=True
     )
 
@@ -86,11 +86,11 @@ class Test_edit:
             sess['user_id'] = 1
         with app.app_context():
             post_id = Post.query.all()[0].id
-        rv = edit_post(client, post_id, 'i am jd')
+        rv = edit_post(client, post_id, 'jd style', 'i am jd')
         assert rv.data == b'success'
         with app.app_context():
             post = Post.query.filter_by(id=post_id).first()
-            assert post.text == 'i am jd'
+            assert post.title == 'jd style' and post.text == 'i am jd'
 
 
 if __name__ == '__main__':

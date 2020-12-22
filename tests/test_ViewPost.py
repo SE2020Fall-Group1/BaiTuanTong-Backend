@@ -1,8 +1,8 @@
 import json
 from manage import app
 from exts import db
-from .utils import add_items
-from app.models import Post
+from tests.utils import add_items
+from app.models import Post, User, Club, user_collecting_post
 import pytest
 
 
@@ -53,6 +53,14 @@ def release_comment(client, user_id, post_id, comment_text):
         follow_redirects=True
     )
 
+
+def collect_post(client, user_id, post_id):
+    url = '/post/view/collect'
+    return client.post(
+        url,
+        data=json.dumps((dict(userId=user_id, postId=post_id))),
+        follow_redirects=True
+    )
 
 
 class Test_ViewPost:
@@ -151,6 +159,22 @@ class Test_release_comment:
             post = Post.query.filter_by(id=2).one_or_none()
             print(post.comments)
             assert post.comments.filter_by(content='no one is stronger than jd').first().user_id == 1
+
+
+class Test_collect_post:
+    def test1(self, client):
+        rv = collect_post(client, 3, 3)
+        assert rv.data == b'collection added'
+        with app.app_context():
+            user = User.query.filter_by(id=3).one_or_none()
+            assert user.collected_posts.filter_by(id=3).one_or_none()
+
+    def test2(self, client):
+        rv = collect_post(client, 3, 3)
+        assert rv.data == b'collection cancelled'
+        with app.app_context():
+            user = User.query.filter_by(id=3).one_or_none()
+            assert user.collected_posts.filter_by(id=3).one_or_none() is None
 
 
 if __name__ == '__main__':
