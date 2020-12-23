@@ -84,8 +84,8 @@ class Test_systemAdmin_page:
         print("\n")
         print(rv.data)
         clubSummary = rv.json.get('clubSummary')
-        assert clubSummary[0] == {'clubName': 'yuanhuo', 'president_name': 'tl'}
-        assert clubSummary[1] == {'clubName': 'feiying', 'president_name': 'dgl'}
+        assert clubSummary[0] == {'clubName': 'yuanhuo', 'president': 'tl'}
+        assert clubSummary[1] == {'clubName': 'feiying', 'president': 'dgl'}
         # data == json.loads(rv.data)
 
 
