@@ -16,6 +16,14 @@ def get_club_info(clubs):
     return ret_info
 
 
+def get_club_brief_info(clubs):
+    ret_info = []
+    for club in clubs:
+        ret_info.append({"clubName": club.club_name,
+                         "president": club.president.username})
+    return ret_info
+
+
 def get_post_info(posts, sort_key=None):
     ret_info = []
     for post in posts:

@@ -1,5 +1,5 @@
 from exts import db
-from app.models import User, Preference, Club, Post
+from app.models import User, Club, Post
 from manage import app
 from flask import jsonify
 import json
@@ -82,7 +82,6 @@ class Test_club_homepage:
     def test_correct(self, client, init_db):
         print('\n')
         rv = load_club_homepage(client, 1)
-        print(rv.data)
         data = rv.json
         clubName = data.get('clubName')
         assert clubName == 'yuanhuo'
@@ -90,13 +89,24 @@ class Test_club_homepage:
         assert intro == 'yuanhuo introduction'
         president = data.get('president')
         assert president == "tl"
+
         postSummary = data.get('postSummary')
+        print('\n', postSummary)
         assert postSummary[0].get('text') == 'jd is too strong'
         assert postSummary[0].get('title') == 'one'
         assert postSummary[0].get('postId') == 1
+        assert postSummary[0].get('clubId') == 1
+        assert postSummary[0].get('clubName') == 'yuanhuo'
+        assert postSummary[0].get('commentCnt') == 0
+        assert postSummary[0].get('likeCnt') == 0
+
         assert postSummary[1].get('text') == 'let\'s compliment jd'
         assert postSummary[1].get('title') == 'two'
         assert postSummary[1].get('postId') == 2
+        assert postSummary[1].get('clubId') == 1
+        assert postSummary[1].get('clubName') == 'yuanhuo'
+        assert postSummary[1].get('commentCnt') == 0
+        assert postSummary[1].get('likeCnt') == 0
 
 
 class Test_change_introduction:
