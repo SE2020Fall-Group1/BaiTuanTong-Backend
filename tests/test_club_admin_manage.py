@@ -22,11 +22,11 @@ def get_admin(client, club_id):
     return client.get(url, follow_redirects=True)
 
 
-def add_admin(client, club_id, user_id):
+def add_admin(client, club_id, username):
     url = '/club/admin/add'
     return client.post(
         url,
-        data=json.dumps(dict(clubId=club_id, userId=user_id))
+        data=json.dumps(dict(clubId=club_id, username=username))
     )
 
 
@@ -57,31 +57,31 @@ class Test_add_admin:
     def test1(self, client):
         with client.session_transaction() as sess:
             sess['user_id'] = 1
-        rv = add_admin(client, 1, 1)
+        rv = add_admin(client, 1, 'jhc')
         assert rv.data == b'user owned the club'
 
     def test2(self, client):
         with client.session_transaction() as sess:
             sess['user_id'] = 1
-        rv = add_admin(client, 2, 1)
+        rv = add_admin(client, 2, 'jhc')
         assert rv.data == b'success'
 
     def test3(self, client):
         with client.session_transaction() as sess:
             sess['user_id'] = 1
-        rv = add_admin(client, 1, 2)
+        rv = add_admin(client, 1, 'gf')
         assert rv.data == b'user managed the club'
 
     def test4(self, client):
         with client.session_transaction() as sess:
             sess['user_id'] = 1
-        rv = add_admin(client, 1, 4)
-        assert rv.data == b'invalid userId'
+        rv = add_admin(client, 1, 'jjjjhhhhccc')
+        assert rv.data == b'invalid username'
 
     def test5(self, client):
         with client.session_transaction() as sess:
             sess['user_id'] = 1
-        rv = add_admin(client, 4, 2)
+        rv = add_admin(client, 4, 'gf')
         assert rv.data == b'invalid clubId'
 
 

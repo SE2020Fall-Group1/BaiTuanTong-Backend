@@ -3,26 +3,24 @@ from flask import Blueprint, request, json
 from .models import Club, User
 from app.utils import get_user_info
 from exts import db
+from decorators import id_mapping
 club_admin_manage = Blueprint('club_admin_manage', __name__, url_prefix='/club/admin')
 
 
 @club_admin_manage.route('/', methods=['GET'])
-def get_admin():
-    club_id = request.args.get('clubId')
-    club = Club.query.filter_by(id=club_id).one_or_none()
-    if not club:
-        return 'invalid clubId', 400
+@id_mapping(['club'])
+def get_admin(club, request_form):
     return {"adminSummary": get_user_info(club.managing_users)}, 200
 
 
 @club_admin_manage.route('/add', methods=['POST'])
 def add_admin():
     request_form = json.loads(request.get_data(as_text=True))
-    user_id = request_form.get('userId')
+    username = request_form.get('username')
     club_id = request_form.get('clubId')
-    user = User.query.filter_by(id=user_id).one_or_none()
+    user = User.query.filter_by(username=username).one_or_none()
     if not user:
-        return 'invalid userId', 400
+        return 'invalid username', 400
     club = Club.query.filter_by(id=club_id).one_or_none()
     if not club:
         return 'invalid clubId', 400
@@ -36,16 +34,8 @@ def add_admin():
 
 
 @club_admin_manage.route('/delete', methods=['POST'])
-def delete_admin():
-    request_form = json.loads(request.get_data(as_text=True))
-    user_id = request_form.get('userId')
-    club_id = request_form.get('clubId')
-    user = User.query.filter_by(id=user_id).one_or_none()
-    if not user:
-        return 'invalid userId', 400
-    club = Club.query.filter_by(id=club_id).one_or_none()
-    if not club:
-        return 'invalid clubId', 400
+@id_mapping(['user', 'club'])
+def delete_admin(user, club, request_form):
     if club not in user.managed_clubs:
         return 'no management error', 400
     user.managed_clubs.remove(club)

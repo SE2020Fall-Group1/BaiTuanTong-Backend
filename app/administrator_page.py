@@ -2,18 +2,8 @@ import json
 from exts import db
 from flask import Blueprint, request, jsonify, make_response
 from .models import Club, User
+from .utils import get_club_brief_info
 administrator_page = Blueprint('administrator_page', __name__)
-
-
-def clubs_info(clubs):
-    ret_info = []
-    for club in clubs:
-        president_name = club.president.username
-        ret_info.append({
-            'clubName': club.club_name,
-            'president_name': president_name
-        })
-    return ret_info
 
 
 @administrator_page.route('/systemAdmin/homepage', methods=['GET'])
@@ -23,7 +13,7 @@ def load_systemAdmin_page():
     else:
         clubs = Club.query.all()
         # clubs = db.session.query(Club).all()
-        club_list = clubs_info(clubs)
+        club_list = get_club_brief_info(clubs)
         return {'clubSummary': club_list}, 200
 
 

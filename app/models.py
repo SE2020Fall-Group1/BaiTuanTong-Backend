@@ -33,11 +33,13 @@ class User(db.Model):
     password = db.Column(db.String(20), nullable=False)
     email = db.Column(db.String(30), nullable=False, unique=True)
     preferences = db.relationship('Preference', secondary=user_preference, backref=db.backref('users'))
-    followed_clubs = db.relationship('Club', secondary=user_following_club, backref=db.backref('following_users'))
+    followed_clubs = db.relationship('Club', secondary=user_following_club,
+                                     backref=db.backref('following_users'), lazy='dynamic')
     managed_clubs = db.relationship('Club', secondary=user_managing_club, backref=db.backref('managing_users'))
     # managed clubs excludes owned_clubs
     owned_clubs = db.relationship('Club', backref=db.backref('president'))
-    collected_posts = db.relationship('Post', secondary=user_collecting_post, backref=db.backref('collecting_users'))
+    collected_posts = db.relationship('Post', secondary=user_collecting_post,
+                                      backref=db.backref('collecting_users'), lazy='dynamic')
     comments = db.relationship('Comment', backref=db.backref('commenter'), lazy='dynamic')
 
 
