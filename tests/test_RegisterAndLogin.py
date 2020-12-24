@@ -99,6 +99,13 @@ class Test_register:
 
 
 class Test_login:
+    def test_systemAdmin_login(self, client):
+        rv = login(client, 'amdno', 'it0803')
+        print(rv.data)
+        assert rv.data == b'system administrator login'
+        with client.session_transaction() as sess:
+            assert sess['systemAdmin_login'] == True
+
     def test_login1(self, client):
         rv = login(client, 'lp', 'hahaha')
         print(rv.data)
@@ -153,4 +160,4 @@ class Test_captcha:
 
 
 if __name__ == '__main__':
-    pytest.main(['-s'])
+    pytest.main(['test_RegisterAndLogin.py', '-s'])
