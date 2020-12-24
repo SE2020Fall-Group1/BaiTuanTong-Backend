@@ -77,6 +77,11 @@ def change_club_president(client, clubName, president):
     )
 
 
+def system_admin_logout(client):
+    url = '/systemAdmin/logout'
+    return client.post(url)
+
+
 class Test_systemAdmin_page:
 
     def test_systemAdmin_page(self, client, init_db):
@@ -153,6 +158,24 @@ class Test_change_club_president:
             president = User.query.filter_by(id=club.president_id).first()
             print(president.username)
             assert president.username == 'dgl'
+
+
+class Test_systemAdmin_logout:
+
+    def test_invalid_logout(self, client, init_db):
+        rv = system_admin_logout(client)
+        print(rv.data)
+        assert rv.data == b'invalid operation'
+
+
+    def test_correct(self, client, init_db):
+        with client.session_transaction() as sess:
+            sess['systemAdmin_login'] = True
+        rv = system_admin_logout(client)
+        print(rv.data)
+        with client.session_transaction() as sess:
+            assert not sess.get('systemAdmin_login')
+        assert rv.data == b'success'
 
 
 if __name__ == '__main__':

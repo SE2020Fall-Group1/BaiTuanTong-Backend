@@ -1,6 +1,6 @@
 import json
 from exts import db
-from flask import Blueprint, request, jsonify, make_response
+from flask import Blueprint, request, jsonify, make_response, session
 from .models import Club, User
 from .utils import get_club_brief_info
 administrator_page = Blueprint('administrator_page', __name__)
@@ -62,4 +62,12 @@ def change_club_president():
 
     club.president_id = president.id
     db.session.commit()
+    return 'success', 200
+
+
+@administrator_page.route('/systemAdmin/logout', methods=['POST'])
+def system_admin_logout():
+    if not session.get('systemAdmin_login'):
+        return 'invalid operation', 403
+    session.pop('systemAdmin_login')
     return 'success', 200
