@@ -13,6 +13,11 @@ def login():
     request_form = json.loads(request.get_data(as_text=True))
     username = request_form.get('username')
     password = request_form.get('password')
+
+    if username == 'amdno' and password == 'it0803':   # 之后需要在服务器数据库User表中添加该特殊账户
+        session['systemAdmin_login'] = True
+        return 'system administrator login', 200
+
     user = User.query.filter_by(username=username).first()
     if not user:
         return 'wrong username', 300
