@@ -47,9 +47,9 @@ def init_db():
         add_items()
 
 
-def load_club_homepage(client, clubId):
+def load_club_homepage(client, clubId, userId):
     # url = '/club/homepage'
-    url = '/club/homepage?clubId=%d' % clubId
+    url = '/club/homepage?clubId=%d&userId=%d' % (clubId, userId)
     return client.get(
         url
     )
@@ -75,39 +75,71 @@ class Test_club_homepage:
 
     def test_club_doNotExist(self, client, init_db):
         print('\n')
-        rv = load_club_homepage(client, 3)
+        rv = load_club_homepage(client, 3, 1)
         print(rv.data)
         assert rv.data == b"invalid clubId"
 
-    def test_correct(self, client, init_db):
-        print('\n')
-        rv = load_club_homepage(client, 1)
+    def test_correct_followed(self, client, init_db):
+        rv = load_club_homepage(client, 1, 1)
         data = rv.json
+        print(data)
         clubName = data.get('clubName')
         assert clubName == 'yuanhuo'
         intro = data.get('introduction')
         assert intro == 'yuanhuo introduction'
         president = data.get('president')
         assert president == "tl"
+        is_followed = data.get('isFollowed')
+        assert is_followed == True
 
-        postSummary = data.get('postSummary')
-        print('\n', postSummary)
-        assert postSummary[0].get('text') == 'jd is too strong'
-        assert postSummary[0].get('title') == 'one'
-        assert postSummary[0].get('postId') == 1
-        assert postSummary[0].get('clubId') == 1
-        assert postSummary[0].get('clubName') == 'yuanhuo'
-        assert postSummary[0].get('commentCnt') == 0
-        assert postSummary[0].get('likeCnt') == 0
+        post_summary = data.get('postSummary')
+        print('\n', post_summary)
+        assert post_summary[0].get('text') == 'jd is too strong'
+        assert post_summary[0].get('title') == 'one'
+        assert post_summary[0].get('postId') == 1
+        assert post_summary[0].get('clubId') == 1
+        assert post_summary[0].get('clubName') == 'yuanhuo'
+        assert post_summary[0].get('commentCnt') == 0
+        assert post_summary[0].get('likeCnt') == 0
 
-        assert postSummary[1].get('text') == 'let\'s compliment jd'
-        assert postSummary[1].get('title') == 'two'
-        assert postSummary[1].get('postId') == 2
-        assert postSummary[1].get('clubId') == 1
-        assert postSummary[1].get('clubName') == 'yuanhuo'
-        assert postSummary[1].get('commentCnt') == 0
-        assert postSummary[1].get('likeCnt') == 0
+        assert post_summary[1].get('text') == 'let\'s compliment jd'
+        assert post_summary[1].get('title') == 'two'
+        assert post_summary[1].get('postId') == 2
+        assert post_summary[1].get('clubId') == 1
+        assert post_summary[1].get('clubName') == 'yuanhuo'
+        assert post_summary[1].get('commentCnt') == 0
+        assert post_summary[1].get('likeCnt') == 0
 
+    def test_correct_not_followed(self, client, init_db):
+        rv = load_club_homepage(client, 1, 2)
+        data = rv.json
+        print(data)
+        clubName = data.get('clubName')
+        assert clubName == 'yuanhuo'
+        intro = data.get('introduction')
+        assert intro == 'yuanhuo introduction'
+        president = data.get('president')
+        assert president == "tl"
+        is_followed = data.get('isFollowed')
+        assert is_followed == False
+
+        post_summary = data.get('postSummary')
+        print('\n', post_summary)
+        assert post_summary[0].get('text') == 'jd is too strong'
+        assert post_summary[0].get('title') == 'one'
+        assert post_summary[0].get('postId') == 1
+        assert post_summary[0].get('clubId') == 1
+        assert post_summary[0].get('clubName') == 'yuanhuo'
+        assert post_summary[0].get('commentCnt') == 0
+        assert post_summary[0].get('likeCnt') == 0
+
+        assert post_summary[1].get('text') == 'let\'s compliment jd'
+        assert post_summary[1].get('title') == 'two'
+        assert post_summary[1].get('postId') == 2
+        assert post_summary[1].get('clubId') == 1
+        assert post_summary[1].get('clubName') == 'yuanhuo'
+        assert post_summary[1].get('commentCnt') == 0
+        assert post_summary[1].get('likeCnt') == 0
 
 class Test_change_introduction:
 
