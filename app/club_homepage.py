@@ -6,16 +6,23 @@ club_homepage = Blueprint('club_homepage', __name__)
 
 
 @club_homepage.route('/club/homepage', methods=['GET'])
-@id_mapping('clubId')
-def load_homepage(club, request_form):
+@id_mapping(['club', 'user'])
+def load_homepage(club, user, request_form):
     introduction = club.introduction
     president = club.president
-    postSummary = get_post_info(club.posts)
-    return {'clubName': club.club_name, 'introduction': introduction, 'president': president.username, 'postSummary': postSummary}, 200
+    post_summary = get_post_info(club.posts)
+    is_followed = user.followed_clubs.filter_by(id=club.id).with_for_update().one_or_none() is not None
+    return {
+               'clubName': club.club_name,
+               'introduction': introduction,
+               'president': president.username,
+               'isFollowed': is_followed,
+               'postSummary': post_summary
+           }, 200
 
 
 @club_homepage.route('/club/homepage/changeIntroduction', methods=['POST'])
-@id_mapping('clubId')
+@id_mapping(['club'])
 def change_introduction(club, request_form):
     new_introduction = request_form.get('newIntroduction')
     club.introduction = new_introduction
