@@ -32,6 +32,7 @@ class User(db.Model):
     username = db.Column(db.String(30), nullable=False, primary_key=True)
     password = db.Column(db.String(20), nullable=False)
     email = db.Column(db.String(30), nullable=False, unique=True)
+    image = db.relationship('Picture', backref=db.backref('users'), uselist=False)
     preferences = db.relationship('Preference', secondary=user_preference, backref=db.backref('users'))
     followed_clubs = db.relationship('Club', secondary=user_following_club,
                                      backref=db.backref('following_users'), lazy='dynamic')
@@ -72,7 +73,9 @@ class Post(db.Model):
 
 class Picture(db.Model):
     __tablename__ = 'picture'
-    url = db.Column(db.String(30), primary_key=True)
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    url = db.Column(db.String(100), primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     post_id = db.Column(db.Integer, db.ForeignKey('post.id'))
 
 
