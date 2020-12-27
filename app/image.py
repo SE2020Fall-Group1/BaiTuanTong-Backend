@@ -30,7 +30,6 @@ def upload_image():
 def upload_user_image():
     userId = request.form.get('userId')
     user = User.query.filter_by(id=userId).one_or_none()
-    print(userId)
     if not user:
         return 'invalid userId', 400
     
