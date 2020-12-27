@@ -11,7 +11,7 @@ def upload_image():
     img = request.files.get('img')
     rand_name = ''.join(random.sample(string.ascii_letters + string.digits, 16))
     img_name = img.filename
-    url = '/static/images' + rand_name + img_name
+    url = '/static/images/' + rand_name + img_name
     path = basedir + '/..' + url
     try:
         img.save(path)
