@@ -32,7 +32,7 @@ class User(db.Model):
     username = db.Column(db.String(30), nullable=False, primary_key=True)
     password = db.Column(db.String(20), nullable=False)
     email = db.Column(db.String(30), nullable=False, unique=True)
-    image = db.relationship('Picture', backref=db.backref('users'), uselist=False)
+    image = db.relationship('Picture', backref=db.backref('user'), uselist=False)
     preferences = db.relationship('Preference', secondary=user_preference, backref=db.backref('users'))
     followed_clubs = db.relationship('Club', secondary=user_following_club,
                                      backref=db.backref('following_users'), lazy='dynamic')
@@ -55,6 +55,7 @@ class Club(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     club_name = db.Column(db.String(50), nullable=False, unique=True)
     introduction = db.Column(db.Text)
+    image = db.relationship('Picture', backref=db.backref('club'), uselist=False)
     president_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     posts = db.relationship('Post', backref=db.backref('club'))
 
@@ -76,6 +77,7 @@ class Picture(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     url = db.Column(db.String(100), primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    club_id = db.Column(db.Integer, db.ForeignKey('club.id'))
     post_id = db.Column(db.Integer, db.ForeignKey('post.id'))
 
 
