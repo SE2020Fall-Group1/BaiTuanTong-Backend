@@ -24,12 +24,13 @@ def release_post():
     
     images = request.files.getlist('image')
     for image in images:
-        url = save_image(image)
+        url = save_image(image, prefix='user')
         pic = Picture(url=url, post_id=post.id)
         try:
             db.session.add(pic)
             db.session.commit()
-        except:
+        except Exception as e:
+            print(e)
             return 'database error', 500
     
     return 'success', 200
@@ -44,6 +45,7 @@ def delete_post(post, request_form):
         db.session.delete(post)
         db.session.commit()
     except Exception as e:
+        print(e)
         return str(e), 500
     return 'success', 200
 
@@ -58,6 +60,7 @@ def edit_post(post, request_form):
         post.text = text
         db.session.commit()
     except Exception as e:
+        print(e)
         return str(e), 500
     return 'success', 200
 
