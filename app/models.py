@@ -32,7 +32,7 @@ class User(db.Model):
     username = db.Column(db.String(30), nullable=False, primary_key=True)
     password = db.Column(db.String(20), nullable=False)
     email = db.Column(db.String(30), nullable=False, unique=True)
-    image = db.relationship('Picture', backref=db.backref('users'), uselist=False)
+    image = db.relationship('Picture', backref=db.backref('user'), uselist=False)
     preferences = db.relationship('Preference', secondary=user_preference, backref=db.backref('users'))
     followed_clubs = db.relationship('Club', secondary=user_following_club,
                                      backref=db.backref('following_users'), lazy='dynamic')
@@ -55,6 +55,7 @@ class Club(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     club_name = db.Column(db.String(50), nullable=False, unique=True)
     introduction = db.Column(db.Text)
+    image = db.relationship('Picture', backref=db.backref('club'), uselist=False)
     president_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     posts = db.relationship('Post', backref=db.backref('club'))
 
@@ -65,7 +66,7 @@ class Post(db.Model):
     club_id = db.Column(db.Integer, db.ForeignKey('club.id'))
     title = db.Column(db.Text, nullable=False)
     text = db.Column(db.Text)  # length <= 1000
-    pictures = db.relationship('Picture', backref=db.backref('post'))
+    pictures = db.relationship('Picture', backref=db.backref('post'), lazy='dynamic')
     likes = db.relationship('Like', backref=db.backref('post'), lazy='dynamic')
     comments = db.relationship('Comment', backref=db.backref('post'), lazy='dynamic')
     publish_time = db.Column(db.DateTime, default=datetime.datetime.now())
@@ -74,8 +75,9 @@ class Post(db.Model):
 class Picture(db.Model):
     __tablename__ = 'picture'
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    url = db.Column(db.String(100), primary_key=True)
+    url = db.Column(db.String(100))
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    club_id = db.Column(db.Integer, db.ForeignKey('club.id'))
     post_id = db.Column(db.Integer, db.ForeignKey('post.id'))
 
 
@@ -92,3 +94,4 @@ class Comment(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     post_id = db.Column(db.Integer, db.ForeignKey('post.id'))
     content = db.Column(db.Text)
+    publish_time = db.Column(db.DateTime, default=datetime.datetime.now())
