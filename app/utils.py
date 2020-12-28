@@ -78,7 +78,10 @@ def save_image(image, prefix, make_tiny=False):
 
 def delete_image(image):
     if image is not None:
-        path = basedir + '/..' + image.url
+        path = os.path.join(basedir, '..', 'static', 'images', image.url)
+        if os.path.exists(path):
+            os.remove(path)
+        path = os.path.join(basedir, '..', 'static', 'images', 'tiny', image.url)
         if os.path.exists(path):
             os.remove(path)
         db.session.delete(image)
