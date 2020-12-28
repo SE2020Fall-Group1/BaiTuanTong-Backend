@@ -2,26 +2,8 @@ from flask import Blueprint, request
 from .models import Post, Club, Picture
 from exts import db
 from decorators import id_mapping
-import os, random, string
+from .utils import save_image, delete_image
 manage_post = Blueprint('manage_post', __name__, url_prefix='/post')
-basedir = os.path.abspath(os.path.dirname(__file__))
-
-
-def save_image(image):
-    rand_name = ''.join(random.sample(string.ascii_letters + string.digits, 16))
-    image_name = image.filename
-    url = '/static/images/' + rand_name + image_name
-    path = basedir + '/..' + url
-    image.save(path)
-    return url
-
-
-def delete_image(image):
-    if image is not None:
-        path = basedir + '/..' + image.url
-        print(path)
-        os.remove(path)
-        db.session.delete(image)
 
 
 @manage_post.route('/release', methods=['POST'])

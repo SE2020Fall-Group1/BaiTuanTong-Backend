@@ -1,3 +1,7 @@
+import os, random, string
+from exts import db
+basedir = os.path.abspath(os.path.dirname(__file__))
+
 def get_user_info(users):
     ret_info = []
     for user in users:
@@ -38,3 +42,20 @@ def get_post_info(posts, sort_key=None):
     if sort_key:
         ret_info = sorted(ret_info, key=lambda x: x[sort_key], reverse=True)
     return ret_info
+
+
+def save_image(image):
+    rand_name = ''.join(random.sample(string.ascii_letters + string.digits, 16))
+    image_name = image.filename
+    url = '/static/images/' + rand_name + image_name
+    path = basedir + '/..' + url
+    image.save(path)
+    return url
+
+
+def delete_image(image):
+    if image is not None:
+        path = basedir + '/..' + image.url
+        if os.path.exists(path):
+            os.remove(path)
+        db.session.delete(image)
