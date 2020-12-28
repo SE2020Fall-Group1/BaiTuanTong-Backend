@@ -22,7 +22,8 @@ def get_club_info(clubs):
         ret_info.append({"clubId": club.id,
                          "clubName": club.club_name,
                          "introduction": club.introduction,
-                         "president": club.president.username})
+                         "president": club.president.username,
+                         "clubImage": club.image.url})
     return ret_info
 
 
@@ -44,7 +45,8 @@ def get_post_info(posts, sort_key=None, max_num=None):
                          "clubName": post.club.club_name,
                          "likeCnt": len(post.likes.all()),
                          "commentCnt": len(post.comments.all()),
-                         "publishTime": post.publish_time})
+                         "publishTime": post.publish_time,
+                         "clubImage": post.club.image.url})
     if sort_key:
         ret_info = sorted(ret_info, key=lambda x: x[sort_key], reverse=True)
         if max_num and max_num < len(ret_info):
