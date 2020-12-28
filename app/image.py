@@ -1,9 +1,8 @@
-from flask import Blueprint, request, jsonify
+from flask import Blueprint, request
 from .models import Picture, User, Club, Post
+from .utils import save_image, delete_image
 from exts import db
-import os, random, string
 image = Blueprint('image', __name__)
-basedir = os.path.abspath(os.path.dirname(__file__))
 
 def reset_db():
     db.drop_all()
@@ -26,22 +25,6 @@ def reset_db():
         db.session.commit()
 
     add_items()
-
-
-def save_image(image):
-    rand_name = ''.join(random.sample(string.ascii_letters + string.digits, 16))
-    image_name = image.filename
-    url = '/static/images/' + rand_name + image_name
-    path = basedir + '/..' + url
-    image.save(path)
-    return url
-
-
-def delete_image(image):
-    if image is not None:
-        path = basedir + '/..' + image.url
-        os.remove(path)
-        db.session.delete(image)
 
 
 @image.route('/image/upload', methods=['POST'])
@@ -93,7 +76,7 @@ def download_user_image():
     try:
         url = user.image.url
     except:
-        return 'no user image', 300
+        return 'no user image', 400
     return url, 200
 
 
@@ -126,5 +109,5 @@ def download_club_image():
     try:
         url = club.image.url
     except:
-        return 'no club image', 300
+        return 'no club image', 400
     return url, 200

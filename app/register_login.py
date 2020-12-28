@@ -77,3 +77,20 @@ def logout():
         return 'invalid userId'
     session.pop('userId', None)
     return 'success', 200
+
+
+@register_login.route('/password', methods=['POST'])
+def change_password():
+    request_form = json.loads(request.get_data(as_text=True))
+    userId = request_form.get('userId')
+    password = request_form.get('password')
+    new_password = request_form.get('new_password')
+    user = User.query.filter_by(id=userId).first()
+    if not user:
+        return 'invalid userId', 300
+    if user.password == password:
+        user.password = new_password
+        db.session.commit()
+        return 'success', 200
+    else:
+        return 'wrong password', 300

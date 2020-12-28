@@ -11,7 +11,7 @@ def viewPost(user, post, request_form):
     club = post.club
     image_urls = [img.url for img in post.pictures]
     isLiked = post.likes.filter_by(user_id=user.id).one_or_none() is not None
-    is_collected = user.collected_posts.filter_by(id=post.id).with_for_update().one_or_none() is not None
+    isCollected = user.collected_posts.filter_by(id=post.id).one_or_none() is not None
     likeCnt = len(post.likes.all())
     comments = [{"content": comment.content,
                  "commenterUsername": comment.commenter.username,
@@ -28,7 +28,7 @@ def viewPost(user, post, request_form):
         "clubName": club.club_name,
         "likeCnt": likeCnt,
         "isLiked": isLiked,
-        "isCollected": is_collected,
+        "isCollected": isCollected,
         "comments": comments,
     }
 
