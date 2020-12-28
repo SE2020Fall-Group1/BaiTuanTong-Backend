@@ -59,7 +59,7 @@ def save_image(image, prefix, make_tiny=False):
     path = os.path.join(basedir, '..', 'static', 'images', url)
     image.save(path)
     if make_tiny:
-        tiny_img = Image.open(image.stream())
+        tiny_img = Image.open(image.stream)
         tiny_img = tiny_img.resize((100, 100))
         path = os.path.join(basedir, '..', 'static', 'images', 'tiny', url)
         tiny_img.save(path)
