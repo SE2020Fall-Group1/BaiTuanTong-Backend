@@ -19,11 +19,15 @@ def get_user_info(users):
 def get_club_info(clubs):
     ret_info = []
     for club in clubs:
+        if club.image:
+            clubImageUrl = club.image.url
+        else:
+            clubImageUrl = None
         ret_info.append({"clubId": club.id,
                          "clubName": club.club_name,
                          "introduction": club.introduction,
                          "president": club.president.username,
-                         "clubImage": club.image.url})
+                         "clubImage": clubImageUrl})
     return ret_info
 
 
@@ -38,6 +42,10 @@ def get_club_brief_info(clubs):
 def get_post_info(posts, sort_key=None, max_num=None):
     ret_info = []
     for post in posts:
+        if post.club.image:
+            clubImageUrl = post.club.image.url
+        else:
+            clubImageUrl = None
         ret_info.append({"postId": post.id,
                          "title": post.title,
                          "text": post.text,
@@ -46,7 +54,7 @@ def get_post_info(posts, sort_key=None, max_num=None):
                          "likeCnt": len(post.likes.all()),
                          "commentCnt": len(post.comments.all()),
                          "publishTime": post.publish_time,
-                         "clubImage": post.club.image.url})
+                         "clubImage": clubImageUrl})
     if sort_key:
         ret_info = sorted(ret_info, key=lambda x: x[sort_key], reverse=True)
         if max_num and max_num < len(ret_info):
@@ -62,7 +70,7 @@ def save_image(image, prefix, make_tiny=False):
     image.save(path)
     if make_tiny:
         tiny_img = Image.open(image.stream)
-        tiny_img = tiny_img.resize((100, 100))
+        tiny_img = tiny_img.resize((50, 50))
         path = os.path.join(basedir, '..', 'static', 'images', 'tiny', url)
         tiny_img.save(path)
     return url
