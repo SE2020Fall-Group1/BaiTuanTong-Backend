@@ -8,7 +8,7 @@ show_post_list = Blueprint('show_post_list', __name__)
 @show_post_list.route('/post/homepage', methods=['GET'])
 def push_homepage():
     posts = Post.query.all()
-    return {"postSummary": get_post_info(posts, sort_key='likeCnt')}
+    return {"postSummary": get_post_info(posts, sort_key='likeCnt', max_num=10)}
 
 
 @show_post_list.route('/post/followed', methods=['GET'])
