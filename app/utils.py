@@ -1,6 +1,7 @@
 import os
 import random
 import string
+import datetime
 from PIL import Image
 
 from exts import db
@@ -63,9 +64,10 @@ def get_post_info(posts, sort_key=None, max_num=None):
 
 
 def save_image(image, prefix, make_tiny=False):
-    rand_name = ''.join(random.sample(string.ascii_letters + string.digits, 16))
-    image_name = image.filename
-    url = os.path.join(prefix, rand_name + image_name)
+    rand_name = ''.join(random.sample(string.ascii_letters + string.digits, 8))
+    ext_name = image.filename.rsplit('.', 1)[1]
+    url = os.path.join(prefix, rand_name + '_' +
+                       str(datetime.datetime.now()).replace(' ', '_').replace(':', '') + '.' + ext_name)
     path = os.path.join(basedir, '..', 'static', 'images', url)
     image.save(path)
     if make_tiny:
