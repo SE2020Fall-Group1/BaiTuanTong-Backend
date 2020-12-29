@@ -69,7 +69,7 @@ class Post(db.Model):
     pictures = db.relationship('Picture', backref=db.backref('post'), lazy='dynamic')
     likes = db.relationship('Like', backref=db.backref('post'), lazy='dynamic')
     comments = db.relationship('Comment', backref=db.backref('post'), lazy='dynamic')
-    publish_time = db.Column(db.DateTime, default=datetime.datetime.now())
+    publish_time = db.Column(db.DateTime, default=datetime.datetime.now)
 
 
 class Picture(db.Model):
@@ -94,4 +94,4 @@ class Comment(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     post_id = db.Column(db.Integer, db.ForeignKey('post.id'))
     content = db.Column(db.Text)
-    publish_time = db.Column(db.DateTime, default=datetime.datetime.now())
+    publish_time = db.Column(db.DateTime, default=datetime.datetime.now)

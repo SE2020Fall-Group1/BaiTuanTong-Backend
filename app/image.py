@@ -14,7 +14,7 @@ def upload_user_image():
     
     image = request.files.get('image')
     try:
-        url = save_image(image, prefix='user')
+        url = save_image(image, prefix='user', make_tiny=True)
     except Exception as e:
         print(e)
         return str(e), 500
