@@ -63,16 +63,33 @@ def get_post_info(posts, sort_key=None, max_num=None):
     return ret_info
 
 
-def save_image(image, prefix, make_tiny=False):
+def crop_image(img, new_w, new_h):
+    w, h = img.size
+    left = (w - new_w) / 2
+    top = (h - new_h) / 2
+    right = (w + new_w) / 2
+    bottom = (h + new_h) / 2
+    return img.crop((left, top, right, bottom))
+
+
+def crop_and_resize(img, size):
+    min_size = min(img.size)
+    img = crop_image(img, min_size, min_size)
+    return img.resize((size, size))
+
+
+def save_image(image, prefix, max_size=None, make_tiny=False):
     rand_name = ''.join(random.sample(string.ascii_letters + string.digits, 8))
     ext_name = image.filename.rsplit('.', 1)[1]
     url = os.path.join(prefix, rand_name + '_' +
                        str(datetime.datetime.now()).replace(' ', '_').replace(':', '') + '.' + ext_name)
     path = os.path.join(basedir, '..', 'static', 'images', url)
-    image.save(path)
+    img = Image.open(image.stream)
+    if max_size:
+        img = crop_and_resize(img, max_size)
+    img.save(path)
     if make_tiny:
-        tiny_img = Image.open(image.stream)
-        tiny_img = tiny_img.resize((50, 50))
+        tiny_img = crop_and_resize(img, 50)
         path = os.path.join(basedir, '..', 'static', 'images', 'tiny', url)
         tiny_img.save(path)
     return url
