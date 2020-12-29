@@ -17,6 +17,10 @@ def viewPost(user, post, request_form):
                  "commenterUsername": comment.commenter.username,
                  "commentTime": comment.publish_time}
                 for comment in post.comments]
+    if post.club.image:
+        clubImageUrl = post.club.image.url
+    else:
+        clubImageUrl = None
 
     return {
         "postId": post.id,
@@ -26,6 +30,7 @@ def viewPost(user, post, request_form):
         "imageUrls": image_urls,
         "clubId": club.id,
         "clubName": club.club_name,
+        "clubImage": clubImageUrl,
         "likeCnt": likeCnt,
         "isLiked": isLiked,
         "isCollected": isCollected,

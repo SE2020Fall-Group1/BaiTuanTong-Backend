@@ -14,7 +14,7 @@ def upload_user_image():
     
     image = request.files.get('image')
     try:
-        url = save_image(image, prefix='user', max_size=100, make_tiny=True)
+        url = save_image(image, prefix='user', max_size=500, make_tiny=True)
     except Exception as e:
         print(e)
         return str(e), 500
@@ -50,7 +50,7 @@ def upload_club_image():
         return 'invalid clubId', 400
     
     image = request.files.get('image')
-    url = save_image(image, prefix='club', max_size=100, make_tiny=True)
+    url = save_image(image, prefix='club', max_size=500, make_tiny=True)
     pic = Picture(url=url, club_id=clubId)
     try:
         delete_image(club.image)
