@@ -2,7 +2,7 @@ from flask import Flask
 import config
 from app import register_login, view_post, search, club_queries, manage_post, club_admin_manage, club_homepage, \
     administrator_page, show_post_list, image
-from exts import db, cache, mail
+from exts import db, cache, mail, login_manager
 
 app = Flask(__name__)  # 通过装饰器设置路由方法
 app.config.from_object(config)
@@ -20,6 +20,8 @@ app.register_blueprint(image.image)
 db.init_app(app)
 cache.init_app(app)
 mail.init_app(app)
+login_manager.init_app(app)
+login_manager.session_protection = 'strong'
 
 
 @app.route('/')
@@ -28,6 +30,6 @@ def hello():
 
 
 if __name__ == '__main__':
-    app.run(debug=False)
+    app.run(host='0.0.0.0', debug=False)
     # 默认debug=False, host=127.0.0.1，port=8888, 基于werkzeug实现
     # werkzeug中的run_sample(host, port, app)

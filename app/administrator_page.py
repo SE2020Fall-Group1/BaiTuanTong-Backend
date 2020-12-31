@@ -1,23 +1,25 @@
 import json
 from exts import db
-from flask import Blueprint, request, jsonify, make_response, session
+from flask import Blueprint, request, jsonify, make_response
+from flask_login import login_required
 from .models import Club, User
 from .utils import get_club_brief_info
 administrator_page = Blueprint('administrator_page', __name__)
 
 
 @administrator_page.route('/systemAdmin/homepage', methods=['GET'])
+@login_required
 def load_systemAdmin_page():
     if False:   # illegal access
         return "illegal access", 403
     else:
         clubs = Club.query.all()
-        # clubs = db.session.query(Club).all()
         club_list = get_club_brief_info(clubs)
         return {'clubSummary': club_list}, 200
 
 
 @administrator_page.route('/systemAdmin/homepage/addClub', methods=['POST'])
+@login_required
 def add_club():
     club_name = (json.loads(request.get_data(as_text=True))).get('clubName')
     club = Club.query.filter_by(club_name=club_name).first()
@@ -37,6 +39,7 @@ def add_club():
 
 
 @administrator_page.route('/systemAdmin/homepage/deleteClub', methods=['POST'])
+@login_required
 def delete_club():
     club_name = (json.loads(request.get_data(as_text=True))).get('clubName')
     club = Club.query.filter_by(club_name=club_name).first()
@@ -49,6 +52,7 @@ def delete_club():
 
 
 @administrator_page.route('/systemAdmin/homepage/changeClubPresident', methods=['POST'])
+@login_required
 def change_club_president():
     club_name = (json.loads(request.get_data(as_text=True))).get('clubName')
     club = Club.query.filter_by(club_name=club_name).first()
@@ -66,8 +70,9 @@ def change_club_president():
 
 
 @administrator_page.route('/systemAdmin/logout', methods=['POST'])
+@login_required
 def system_admin_logout():
     if not session.get('systemAdmin_login'):
         return 'invalid operation', 403
-    session.pop('systemAdmin_login')
+    logout_user()
     return 'success', 200

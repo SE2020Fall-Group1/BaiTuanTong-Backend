@@ -1,10 +1,14 @@
 import json
 import smtplib
-from flask import Blueprint, request, session
+
+import numpy as np
+from flask import Blueprint, request
+from flask_login import login_user, logout_user, login_required
 from flask_mail import Message
+
 from exts import db, cache, mail
 from .models import User
-import numpy as np
+
 register_login = Blueprint('register_login', __name__, url_prefix='/user')
 
 
@@ -14,17 +18,14 @@ def login():
     username = request_form.get('username')
     password = request_form.get('password')
 
-    if username == 'amdno' and password == 'it0803':   # 之后需要在服务器数据库User表中添加该特殊账户
-        session['systemAdmin_login'] = True
-        return 'system administrator login', 200
-
     user = User.query.filter_by(username=username).first()
+
     if not user:
         return 'wrong username', 300
     if user.password == password:
-        if session.get('user_id'):
-            return 'multiple login error'
-        session['user_id'] = user.id
+        login_user(user)
+        if username == 'amdno':
+            return 'system administrator login', 200
         return {'userId': user.id}, 200
     else:
         return 'wrong password', 300
@@ -70,16 +71,16 @@ def email_captcha():
 
 
 @register_login.route('/logout', methods=['POST'])
+@login_required
 def logout():
     request_form = json.loads(request.get_data(as_text=True))
     user_id = request_form.get('userId')
-    if session.get('user_id') != user_id:
-        return 'invalid userId'
-    session.pop('userId', None)
+    logout_user()
     return 'success', 200
 
 
 @register_login.route('/password', methods=['POST'])
+@login_required
 def change_password():
     request_form = json.loads(request.get_data(as_text=True))
     userId = request_form.get('userId')

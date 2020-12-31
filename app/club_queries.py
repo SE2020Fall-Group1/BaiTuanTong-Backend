@@ -1,8 +1,8 @@
-from flask import Blueprint, request, jsonify
-from exts import db
-from .models import Club, User
-from app.utils import get_club_info
+from flask import Blueprint, request
+from flask_login import login_required
 
+from app.utils import get_club_info
+from .models import User
 
 club_queries = Blueprint('club_queries', __name__)
 
@@ -17,6 +17,7 @@ def query_admin():
 
 
 @club_queries.route('/club/query/followed', methods=['GET'])
+@login_required
 def query_followed():
     userId = request.args.get('userId')
     user = User.query.filter_by(id=userId).first()

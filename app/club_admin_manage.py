@@ -1,19 +1,25 @@
 import json
+
 from flask import Blueprint, request, json
-from .models import Club, User
+from flask_login import login_required
+
 from app.utils import get_user_info
-from exts import db
 from decorators import id_mapping
+from exts import db
+from .models import Club, User
+
 club_admin_manage = Blueprint('club_admin_manage', __name__, url_prefix='/club/admin')
 
 
 @club_admin_manage.route('/', methods=['GET'])
+@login_required
 @id_mapping(['club'])
 def get_admin(club, request_form):
     return {"adminSummary": get_user_info(club.managing_users)}, 200
 
 
 @club_admin_manage.route('/add', methods=['POST'])
+@login_required
 def add_admin():
     request_form = json.loads(request.get_data(as_text=True))
     username = request_form.get('username')
@@ -34,6 +40,7 @@ def add_admin():
 
 
 @club_admin_manage.route('/delete', methods=['POST'])
+@login_required
 @id_mapping(['user', 'club'])
 def delete_admin(user, club, request_form):
     if club not in user.managed_clubs:
