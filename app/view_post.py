@@ -1,7 +1,10 @@
 from flask import Blueprint
+from flask_login import login_required
+
 from app.models import Like, Comment
-from exts import db
 from decorators import id_mapping
+from exts import db
+
 view_post = Blueprint('view_post', __name__, url_prefix='/post/view')
 
 
@@ -53,6 +56,7 @@ def viewPostInfo(user, post, request_form):
 
 
 @view_post.route('/like', methods=['POST'])
+@login_required
 @id_mapping(['user', 'post'])
 def alter_like(user, post, request_form):
     like = post.likes.filter_by(user_id=user.id).with_for_update().one_or_none()
@@ -70,6 +74,7 @@ def alter_like(user, post, request_form):
 
 
 @view_post.route('/comment', methods=['POST'])
+@login_required
 @id_mapping(['user', 'post'])
 def release_comment(user, post, request_form):
     comment_text = request_form.get('commentText')
@@ -83,6 +88,7 @@ def release_comment(user, post, request_form):
 
 
 @view_post.route('/collect', methods=['POST'])
+@login_required
 @id_mapping(['user', 'post'])
 def collect_post(user, post, request_form):
     is_collected = user.collected_posts.filter_by(id=post.id).with_for_update().one_or_none() is not None

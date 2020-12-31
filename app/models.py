@@ -1,5 +1,13 @@
 import datetime
-from exts import db
+from exts import db, login_manager
+from flask_login import UserMixin
+
+
+@login_manager.user_loader
+def load_user(user_id):
+    user = User.query.get(user_id)
+    return user
+
 
 user_preference = db.Table(
     'user_preference',
@@ -26,10 +34,10 @@ user_collecting_post = db.Table(
 )
 
 
-class User(db.Model):
+class User(db.Model, UserMixin):
     __tablename__ = 'user'
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    username = db.Column(db.String(30), nullable=False, primary_key=True)
+    username = db.Column(db.String(30), nullable=False, index=True, unique=True)
     password = db.Column(db.String(20), nullable=False)
     email = db.Column(db.String(30), nullable=False, unique=True)
     image = db.relationship('Picture', backref=db.backref('user'), uselist=False)

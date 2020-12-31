@@ -1,7 +1,8 @@
+import datetime
 import os
 import random
 import string
-import datetime
+
 from PIL import Image
 
 from exts import db

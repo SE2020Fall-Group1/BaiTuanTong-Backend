@@ -1,11 +1,15 @@
 from flask import Blueprint, request
-from .models import Picture, User, Club, Post
-from .utils import save_image, delete_image
+from flask_login import login_required
+
 from exts import db
+from .models import Picture, User, Club
+from .utils import save_image, delete_image
+
 image = Blueprint('image', __name__)
 
 
 @image.route('/user/image/upload', methods=['POST'])
+@login_required
 def upload_user_image():
     userId = request.form.get('userId')
     user = User.query.filter_by(id=userId).one_or_none()
@@ -32,6 +36,7 @@ def upload_user_image():
 
 
 @image.route('/user/image/download', methods=['GET'])
+@login_required
 def download_user_image():
     userId = request.args.get('userId')
     user = User.query.filter_by(id=userId).one_or_none()
@@ -43,6 +48,7 @@ def download_user_image():
 
 
 @image.route('/club/image/upload', methods=['POST'])
+@login_required
 def upload_club_image():
     clubId = request.form.get('clubId')
     club = Club.query.filter_by(id=clubId).one_or_none()
@@ -64,6 +70,7 @@ def upload_club_image():
 
 
 @image.route('/club/image/download', methods=['GET'])
+@login_required
 def download_club_image():
     clubId = request.args.get('clubId')
     club = Club.query.filter_by(id=clubId).one_or_none()
