@@ -4,6 +4,7 @@
 ### 配置环境
 ```bash
 pip install -r requirements.txt
+bash make_dir.sh
 ```
 
 ### 启动后端
