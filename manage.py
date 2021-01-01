@@ -30,6 +30,6 @@ def hello():
 
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', debug=False)
+    app.run(host='0.0.0.0', port=5000, debug=False)
     # 默认debug=False, host=127.0.0.1，port=8888, 基于werkzeug实现
     # werkzeug中的run_sample(host, port, app)
