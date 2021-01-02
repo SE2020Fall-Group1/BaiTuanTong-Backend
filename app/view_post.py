@@ -4,6 +4,7 @@ from flask_login import login_required
 from app.models import Like, Comment
 from decorators import id_mapping
 from exts import db
+from .utils import time2str
 
 view_post = Blueprint('view_post', __name__, url_prefix='/post/view')
 
@@ -18,7 +19,7 @@ def viewPost(user, post, request_form):
     likeCnt = len(post.likes.all())
     comments = [{"content": comment.content,
                  "commenterUsername": comment.commenter.username,
-                 "commentTime": comment.publish_time}
+                 "commentTime": time2str(comment.publish_time)}
                 for comment in post.comments]
     if post.club.image:
         clubImageUrl = post.club.image.url
@@ -27,7 +28,7 @@ def viewPost(user, post, request_form):
 
     return {
         "postId": post.id,
-        "publishTime": post.publish_time,
+        "publishTime": time2str(post.publish_time),
         "title": post.title,
         "content": post.text,
         "imageUrls": image_urls,

@@ -10,6 +10,10 @@ from exts import db
 basedir = os.path.abspath(os.path.dirname(__file__))
 
 
+def time2str(time):
+    return time.strftime('%Y-%m-%d %H:%M:%S')
+
+
 def get_user_info(users):
     ret_info = []
     for user in users:
@@ -55,7 +59,7 @@ def get_post_info(posts, sort_key=None, max_num=None):
                          "clubName": post.club.club_name,
                          "likeCnt": len(post.likes.all()),
                          "commentCnt": len(post.comments.all()),
-                         "publishTime": post.publish_time,
+                         "publishTime": time2str(post.publish_time),
                          "clubImage": clubImageUrl})
     if sort_key:
         ret_info = sorted(ret_info, key=lambda x: x[sort_key], reverse=True)

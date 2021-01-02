@@ -6,6 +6,7 @@ def add_items():
     u1 = User(id=1, username='jhc', password='hehehe', email='jhc@pku.edu.cn')
     u2 = User(id=2, username='gf', password='gagaga', email='gf@stu.pku.edu.cn')
     u3 = User(id=3, username='zhp', password='hailjd', email='zhp@pku.edu.cn')
+    ad = User(id=4, username='amdno', password='it0803', email='admno@pku.edu.cn')
 
     pr1 = Preference(preference_name='kfc')
 
@@ -25,5 +26,5 @@ def add_items():
     u2.managed_clubs.append(c1)
     u2.collected_posts.append(po3)
 
-    db.session.add_all([u1, u2, u3, pr1, po1, po2, po3, co1, like1, c1, c2])
+    db.session.add_all([ad, u1, u2, u3, pr1, po1, po2, po3, co1, like1, c1, c2])
     db.session.commit()
