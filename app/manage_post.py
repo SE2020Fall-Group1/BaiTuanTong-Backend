@@ -64,25 +64,12 @@ def edit_post():
         return 'invalid postId', 400
     title = request.form.get('title')
     text = request.form.get('text')
-    images = request.files.getlist('image')
 
     post.title = title
     post.text = text
-    for img in post.pictures:
-        try:
-            delete_image(img)
-        except Exception as e:
-            print(e)
-            return str(e), 500
-
-    for image in images:
-        url = save_image(image, prefix='post')
-        pic = Picture(url=url, post_id=post.id)
-        db.session.add(pic)
     try:
         db.session.commit()
     except Exception as e:
         print(e)
         return str(e), 500
     return 'success', 200
-
