@@ -6,6 +6,7 @@ from .models import User
 
 club_queries = Blueprint('club_queries', __name__)
 
+
 @club_queries.route('/club/query/admin', methods=['GET'])
 def query_admin():
     userId = request.args.get('userId')
