@@ -5,7 +5,7 @@ from flask_login import login_required, logout_user
 
 from exts import db
 from .models import Club, User
-from .utils import get_club_brief_info
+from .utils import get_club_brief_info, delete_club_posts
 
 administrator_page = Blueprint('administrator_page', __name__)
 
@@ -49,6 +49,7 @@ def delete_club():
     if not club:
         return 'invalid clubname', 403
 
+    delete_club_posts(club)
     db.session.delete(club)
     db.session.commit()
     return 'success', 200

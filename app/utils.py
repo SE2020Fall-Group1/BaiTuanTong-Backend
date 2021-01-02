@@ -109,3 +109,11 @@ def delete_image(image):
         if os.path.exists(path):
             os.remove(path)
         db.session.delete(image)
+
+
+def delete_club_posts(club):
+    posts = club.posts
+    for post in posts:
+        for image in post.pictures:
+            delete_image(image)
+        db.session.delete(post)
