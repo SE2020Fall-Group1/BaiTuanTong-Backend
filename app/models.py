@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import datetime
 from exts import db, login_manager
 from flask_login import UserMixin
@@ -62,7 +63,7 @@ class Club(db.Model):
     __tablename__ = 'club'
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     club_name = db.Column(db.String(50), nullable=False, unique=True)
-    introduction = db.Column(db.Text)
+    introduction = db.Column(db.Text, default='社团还没有简介哦~')
     image = db.relationship('Picture', backref=db.backref('club'), uselist=False)
     president_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     posts = db.relationship('Post', backref=db.backref('club'))
@@ -72,8 +73,8 @@ class Post(db.Model):
     __tablename__ = 'post'
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     club_id = db.Column(db.Integer, db.ForeignKey('club.id'))
-    title = db.Column(db.Text, nullable=False)
-    text = db.Column(db.Text)  # length <= 1000
+    title = db.Column(db.Text, nullable=False)  # length <= 100
+    text = db.Column(db.Text)  # length <= 5000
     pictures = db.relationship('Picture', backref=db.backref('post'), lazy='dynamic')
     likes = db.relationship('Like', backref=db.backref('post'), lazy='dynamic')
     comments = db.relationship('Comment', backref=db.backref('post'), lazy='dynamic')
@@ -101,5 +102,5 @@ class Comment(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     post_id = db.Column(db.Integer, db.ForeignKey('post.id'))
-    content = db.Column(db.Text)
+    content = db.Column(db.Text)  # length <= 1000
     publish_time = db.Column(db.DateTime, default=datetime.datetime.now)

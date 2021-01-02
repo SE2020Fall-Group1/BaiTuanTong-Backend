@@ -94,7 +94,7 @@ def save_image(image, prefix, max_size=None, make_tiny=False):
         img = crop_and_resize(img, max_size)
     img.save(path)
     if make_tiny:
-        tiny_img = crop_and_resize(img, 50)
+        tiny_img = crop_and_resize(img, 200)
         path = os.path.join(basedir, '..', 'static', 'images', 'tiny', url)
         tiny_img.save(path)
     return url
