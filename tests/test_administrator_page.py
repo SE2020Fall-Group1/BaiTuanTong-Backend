@@ -36,11 +36,13 @@ def init_db():
 
             po1 = Post(title='one', text='jd is too strong', club_id=1)
             po2 = Post(title='two', text="let's compliment jd", club_id=1)
+            po3 = Post(title='three', text="let's compliment j", club_id=2)
+            po4 = Post(title='four', text="let's compliment j", club_id=2)
 
             u1.followed_clubs.append(c1)
             u2.managed_clubs.append(c1)
 
-            db.session.add_all([u1, u2, po1, po2, c1, c2])
+            db.session.add_all([u1, u2, po1, po2, po3, po4, c1, c2])
             db.session.commit()
 
         add_items()
@@ -120,12 +122,24 @@ class Test_delete_club:
         assert rv.data == b'invalid clubname'
 
     def test_correct(self, client, init_db):
-        rv = delete_club(client, 'fenglei')
+
+        print("原动态:")
+        with app.app_context():
+            posts = Post.query.all()
+            print(posts)
+
+        rv = delete_club(client, 'feiying')
+
+        print("删除后:")
+        with app.app_context():
+            posts = Post.query.all()
+            print(posts)
+
         print(rv.data)
         assert rv.data == b'success'
 
     def test_club_deleted(self, client, init_db):
-        rv = delete_club(client, 'fenglei')
+        rv = delete_club(client, 'feiying')
         print(rv.data)
         assert rv.data == b'invalid clubname'
 
@@ -166,7 +180,6 @@ class Test_systemAdmin_logout:
         rv = system_admin_logout(client)
         print(rv.data)
         assert rv.data == b'invalid operation'
-
 
     def test_correct(self, client, init_db):
         with client.session_transaction() as sess:

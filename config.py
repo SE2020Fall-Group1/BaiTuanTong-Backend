@@ -1,4 +1,4 @@
-SECRET_KEY = ''
+SECRET_KEY = '123456'
 
 DIALECT = 'mysql'
 DRIVER = 'pymysql'
